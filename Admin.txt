@@ -1,0 +1,6 @@
+admin01|12345|Admin
+admin02|23456|Admin
+admin03|34567|Admin
+manager01|11111|Manager
+manager02|22222|Manager
+manager03|33333|Manager
