@@ -36,8 +36,8 @@ protected:
     string role;
 public:
     User(string un, string r) : username(un), role(r) {}
-    virtual ~User() {} // 虚析构函数
-    virtual void displayMenu() = 0; // 纯虚函数，等待 Member 2 & 3 实现
+    virtual ~User() {} // virtual destructor for proper cleanup in derived classes
+    virtual void displayMenu() = 0; // pure virtual function, waiting for Member 2 & 3 implementation
 };
 
 class Admin : public User {
