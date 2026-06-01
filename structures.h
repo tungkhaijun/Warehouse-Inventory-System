@@ -4,15 +4,16 @@
 
 #include <iostream>
 #include <string>
+using namespace std;
 
 // 统一的商品结构体
 struct Product {
-    std::string productId;
-    std::string productName;
+    string productId;
+    string productName;
     int quantity;
     double price;
-    std::string location;
-    std::string supplier;
+    string location;
+    string supplier;
 };
 
 #endif
