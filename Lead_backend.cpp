@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include "backend.h"
 using namespace std;
 
 // ==========================================
@@ -124,7 +125,7 @@ public:
     }
 
     // Inserting a new node at the end of the linked list
-    void insertNode(int id, string name, string cat, int qty, string z, string sup, double price) {
+    void ProductLinkedList::insertNode(int id, string name, string cat, int qty, string z, string sup, double price) {
         Product *temp;
         temp = new Product;
         temp->productId = id;
@@ -178,7 +179,7 @@ public:
     }
 
     // sortList: sort the linked list based on the specified criteria (1: quantity, 2: price, 0: ID)
-    void sortList(int sortBy) {
+    void ProductLinkedList::sortList(int sortBy) {
         if (count <= 1) return;
 
         // 1. temporary array to hold pointers to the nodes for sorting
@@ -206,7 +207,7 @@ public:
     }
 
     // binarySearch: search for a product by ID using binary search (requires the list to be sorted by ID)
-    Product* binarySearch(int targetId) {
+    Product* ProductLinkedList::binarySearch(int targetId) {
         if (count == 0) return NULL;
 
         // Attention: binary search requires the list to be sorted by product ID, so we sort it first
@@ -245,7 +246,7 @@ public:
     }
 
     // Display the linked list (for testing purposes)
-    void display() {
+    void ProductLinkedList::display() {
         Product* temp = head;
         while (temp != NULL) {
             cout << "[ID: " << temp->productId 
