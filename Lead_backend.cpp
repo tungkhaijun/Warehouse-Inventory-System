@@ -4,118 +4,28 @@
 using namespace std;
 
 // ==========================================
-// 1. structure definitions for products and orders
+// 1. dynamic non-primitive data structure: user class hierarchy (Admin, Manager, Member)
 // ==========================================
-struct Product {
-    int productId;
-    string productName;
-    string category;
-    int stockQuantity;
-    string zone;
-    string supplier;
-    double productPrice;
-    
-    Product* next;
-};
+    User::User(string un, string pw, string r) : username(un), password(pw), role(r) {}
+    User::~User() {}
 
-struct Order {
-    int orderId;
-    int productId;
-    int dispatchQuantity;
-    string operatorName;
-    string orderDate;
-    
-    Order* next;
-};
+    Admin::Admin(string un) : User(un, "", "Admin") {}
+    Admin::~Admin() {}
+    void Admin::displayMenu() { cout << "--- Admin Menu ---" << endl; }
+
+    Manager::Manager(string un) : User(un, "", "Manager") {}
+    Manager::~Manager() {}
+    void Manager::displayMenu() { cout << "--- Manager Menu ---" << endl; }
 
 // ==========================================
-// 2. dynamic non-primitive data structure: user class hierarchy (Admin, Manager, Member)
+// 2. linked list with merge sort and binary search
 // ==========================================
-class User {
-protected:
-    string username;
-    string role;
-public:
-    User(string un, string r) : username(un), role(r) {}
-    virtual ~User() {} // virtual destructor for proper cleanup in derived classes
-    virtual void displayMenu() = 0; // pure virtual function, waiting for Member 2 & 3 implementation
-};
-
-class Admin : public User {
-public:
-    Admin(string un) : User(un, "Admin") {}
-    ~Admin() {}
-    void displayMenu() override { cout << "--- Admin Menu ---" << endl; }
-};
-
-class Manager : public User {
-public:
-    Manager(string un) : User(un, "Manager") {}
-    ~Manager() {}
-    void displayMenu() override { cout << "--- Manager Menu ---" << endl; }
-};
-
-// ==========================================
-// 3. linked list with merge sort and binary search
-// ==========================================
-class ProductLinkedList {
-private:
-    Product* head;
-    int count;
-
-    // Merge Sort
-    void Merge(Product** arr, int lpos, int rpos, int rend, int sortBy) {
-        int lend = rpos - 1;
-        int tmppos = 0;
-        int numelements = rend - lpos + 1;
-        
-        // distribute the elements into the temporary array
-        Product** TmpArray;
-        TmpArray = new Product*[numelements];
-
-        // use condition to decide which element to compare and move into the temporary array
-        while (lpos <= lend && rpos <= rend) {
-            bool condition = false;
-            if (sortBy == 1) { // 1: based on stock quantity
-                condition = arr[lpos]->stockQuantity <= arr[rpos]->stockQuantity;
-            } else if (sortBy == 2) { // 2: based on product price
-                condition = arr[lpos]->productPrice <= arr[rpos]->productPrice;
-            } else { // 0: based on product ID (required for binary search)
-                condition = arr[lpos]->productId <= arr[rpos]->productId;
-            }
-
-            if (condition) TmpArray[tmppos++] = arr[lpos++];
-            else TmpArray[tmppos++] = arr[rpos++];
-        }
-
-        while (lpos <= lend) TmpArray[tmppos++] = arr[lpos++];
-        while (rpos <= rend) TmpArray[tmppos++] = arr[rpos++];
-
-        // copy the sorted temporary array back to the original array
-        for (int i = 0; i < numelements; i++) {
-            arr[rend - i] = TmpArray[numelements - 1 - i];
-        }
-        
-        delete[] TmpArray; // free temporary array memory
-    }
-
-    void MergeSortRec(Product** arr, int left, int right, int sortBy) {
-        int center;
-        if (left < right) {
-            center = (left + right) / 2;
-            MergeSortRec(arr, left, center, sortBy);
-            MergeSortRec(arr, center + 1, right, sortBy);
-            Merge(arr, left, center + 1, right, sortBy);
-        }
-    }
-
-public:
-    ProductLinkedList() {
+    ProductLinkedList::ProductLinkedList() {
         head = NULL;
         count = 0;
     }
 
-    ~ProductLinkedList() {
+    ProductLinkedList::~ProductLinkedList() {
         Product* curr = head;
         while (curr != NULL) {
             Product* nextNode = curr->next;
@@ -124,10 +34,52 @@ public:
         }
     }
 
+    // Merge Sort
+    void ProductLinkedList::Merge(Product** arr, int lpos, int rpos, int rend, int sortBy) {
+        int lend = rpos - 1;
+        int tmppos = 0;
+        int numelements = rend - lpos + 1;
+        
+        Product** TmpArray = new Product*[numelements];
+        int l_cursor = lpos;
+        int r_cursor = rpos;
+
+        while (l_cursor <= lend && r_cursor <= rend) {
+            bool condition = false;
+            if (sortBy == 1) {
+                condition = arr[l_cursor]->stockQuantity <= arr[r_cursor]->stockQuantity;
+            } else if (sortBy == 2) {
+                condition = arr[l_cursor]->productPrice <= arr[r_cursor]->productPrice;
+            } else {
+                condition = arr[l_cursor]->productId <= arr[r_cursor]->productId;
+            }
+
+            if (condition) TmpArray[tmppos++] = arr[l_cursor++];
+            else TmpArray[tmppos++] = arr[r_cursor++];
+        }
+
+        while (l_cursor <= lend) TmpArray[tmppos++] = arr[l_cursor++];
+        while (r_cursor <= rend) TmpArray[tmppos++] = arr[r_cursor++];
+
+        for (int i = 0; i < numelements; i++) {
+            arr[rend - i] = TmpArray[numelements - 1 - i];
+        }
+        
+        delete[] TmpArray;
+    }
+
+    void ProductLinkedList::MergeSortRec(Product** arr, int left, int right, int sortBy) {
+        if (left < right) {
+            int center = (left + right) / 2;
+            MergeSortRec(arr, left, center, sortBy);
+            MergeSortRec(arr, center + 1, right, sortBy);
+            Merge(arr, left, center + 1, right, sortBy);
+        }
+    }
+
     // Inserting a new node at the end of the linked list
     void ProductLinkedList::insertNode(int id, string name, string cat, int qty, string z, string sup, double price) {
-        Product *temp;
-        temp = new Product;
+        Product* temp = new Product;
         temp->productId = id;
         temp->productName = name;
         temp->category = cat;
@@ -136,13 +88,12 @@ public:
         temp->supplier = sup;
         temp->productPrice = price;
         temp->next = NULL;
-        if(head == NULL){
+
+        if (head == NULL) {
             head = temp;
-            temp->next = NULL;
         } else {
-            Product *curr;
-            curr = head;
-            while(curr->next != NULL){
+            Product* curr = head;
+            while (curr->next != NULL) {
                 curr = curr->next;
             }
             curr->next = temp;
@@ -151,21 +102,20 @@ public:
     }
 
     // Deleting a node by product ID
-    void deleteNode(int id) {
-        if (head == NULL){
+    void ProductLinkedList::deleteNode(int id) {
+        if (head == NULL) {
             cout << "List is empty. Nothing to delete." << endl;
-            return; // empty list, nothing to delete
+            return;
         }
-        Product* temp;
+        
+        Product* temp = head;
         Product* prev = NULL;
-        temp = head;
+        
         if (head->productId == id) {
-            temp = head->next;
-            delete head;
-            head = temp;
+            head = head->next;
+            delete temp;
             count--;
         } else {
-            temp = head;
             while (temp != NULL && temp->productId != id) {
                 prev = temp;
                 temp = temp->next;
@@ -182,7 +132,6 @@ public:
     void ProductLinkedList::sortList(int sortBy) {
         if (count <= 1) return;
 
-        // 1. temporary array to hold pointers to the nodes for sorting
         Product** TmpArray = new Product*[count];
         Product* curr = head;
         int i = 0;
@@ -191,29 +140,25 @@ public:
             curr = curr->next;
         }
 
-        // 2. MergeSortRec: sort the array of pointers based on the specified criteria
         MergeSortRec(TmpArray, 0, count - 1, sortBy);
 
-        // 3. Reconstruct the linked list based on the sorted array
         head = TmpArray[0];
         curr = head;
         for (i = 1; i < count; i++) {
             curr->next = TmpArray[i];
             curr = curr->next;
         }
-        curr->next = NULL; // terminate the linked list
+        curr->next = NULL;
 
-        delete[] TmpArray; // free temporary array memory
+        delete[] TmpArray;
     }
 
     // binarySearch: search for a product by ID using binary search (requires the list to be sorted by ID)
     Product* ProductLinkedList::binarySearch(int targetId) {
         if (count == 0) return NULL;
 
-        // Attention: binary search requires the list to be sorted by product ID, so we sort it first
         sortList(0); 
 
-        // temporary array to hold pointers to the nodes for binary search
         Product** TmpArray = new Product*[count];
         Product* curr = head;
         int i = 0;
@@ -222,12 +167,10 @@ public:
             curr = curr->next;
         }
 
-        int first, last, mid;
-        // not use int found; because we want to return the pointer to the found product, not just a boolean
+        int first = 0;
+        int last = count - 1;
+        int mid;
         Product* found = NULL;
-        first = 0;
-        last = count - 1;
-        mid = 0;
         
         while (first <= last) {
             mid = (first + last) / 2;
@@ -241,8 +184,8 @@ public:
             }
         }
 
-        delete[] TmpArray; // free temporary array memory
-        return found; // return the found product pointer or NULL if not found
+        delete[] TmpArray;
+        return found;
     }
 
     // Display the linked list (for testing purposes)
@@ -250,17 +193,16 @@ public:
         Product* temp = head;
         while (temp != NULL) {
             cout << "[ID: " << temp->productId 
-                    << " | Name: " << temp->productName 
-                    << " | Category: " << temp->category
-                    << " | Zone: " << temp->zone
-                    << " | Supplier: " << temp->supplier
-                    << " | Qty: " << temp->stockQuantity 
-                    << " | Price: RM" << temp->productPrice << "]\n";
+                << " | Name: " << temp->productName 
+                << " | Category: " << temp->category
+                << " | Zone: " << temp->zone
+                << " | Supplier: " << temp->supplier
+                << " | Qty: " << temp->stockQuantity 
+                << " | Price: RM" << temp->productPrice << "]\n";
             temp = temp->next;
         }
         cout << "-----------------------------------\n";
     }
-};
 
 // ==========================================
 // main function for testing the ProductLinkedList class

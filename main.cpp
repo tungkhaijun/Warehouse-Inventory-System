@@ -54,10 +54,10 @@ void loadDataFromFile(){
 		newNode->productId = id;
 		newNode->productName = name;
 		newNode->category = category;
-		newNode->quantity = qty;
-		newNode->location = location;
+		newNode->stockQuantity = qty;
+		newNode->zone = location;
 		newNode->supplier = supplier;
-		newNode->price = price;
+		newNode->productPrice = price;
 		newNode->next = NULL;
 		
 		if (inventoryHead == NULL){
@@ -130,10 +130,10 @@ void saveDataToFile(){
 		outFile << temp->productId << " "
 		        << temp->productName<< " "
 		        << temp->category<< " "
-		        << temp->quantity<< " "
-		        << temp->location<< " "
+		        << temp->stockQuantity<< " "
+		        << temp->zone<< " "
 		        << temp->supplier <<" "
-		        << temp->price <<"\n";
+		        << temp->productPrice <<"\n";
 	
 	temp = temp->next;
 	}
