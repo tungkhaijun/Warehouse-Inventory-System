@@ -6,23 +6,37 @@
 #include <string>
 using namespace std;
 
-// 统一的商品结构体
+//for the product data
 struct Product {
-    string productId;
+    int productId;
     string productName;
     string category;
-    int quantity;
-    double price;
-    string location;
+    int stockQuantity;
+    string zone;
     string supplier;
-    Product* next;// Pointer for linked list
+    double productPrice;
+    
+    Product* next;
 };
 
+//for the order data
+struct Order {
+    int orderId;
+    int productId;
+    int dispatchQuantity;
+    string operatorName;
+    string orderDate;
+    
+    Order* next;
+};
+
+//for the user's data
 struct User {
     string username;
-    string password;
-    string role;
-    User* next; // Pointer for linked list
+    string password; 
+    string role; // User,Admin,Manager
+    
+    User* next; 
 };
 
 #endif

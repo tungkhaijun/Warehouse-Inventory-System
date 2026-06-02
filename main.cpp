@@ -5,7 +5,6 @@
 #include "structures.h"
 #include "customer.h"
 //#include "admin.h"
-//#include "manager.h"
 
 using namespace std;
 
