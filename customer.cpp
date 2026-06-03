@@ -3,52 +3,53 @@
 #include <fstream>
 #include"customer.h"
 
-using namespace std;void customer::addbooking(){
-	booking* newbooking = new booking;
+using namespace std;
+void Customer::addOrder(){
+	Order* newOrder = new Order;
 	
-	cout<<"\n-- Create New Booking --\n";
-	cout<<"Enter Booking ID (e.g: 1000): ";
-	cin >> newbooking->bookingid;
+	cout<<"\n-- Create New Order --\n";
+	cout<<"Enter Order ID (e.g: 1000): ";
+	cin >> newOrder->orderId;
 	
-	cout<<"Enter Product ID you want to book: ";
-	cin >> newbooking->productid;
+	cout<<"Enter Product ID you want to order?: ";
+	cin >> newOrder->productId;
 	
 	cout<<"Enter Quantity: ";
-	cin >> newbooking->quantity;
+	cin >> newOrder->dispatchQuantity;
 	
-	cout<<"EnterOrder Date: ";
-	cin >> newbooking->orderdate;
+	cout<<"Enter Order Date: ";
+	cin >> newOrder->orderDate;
 	
-	newbooking->next = nullptr;
+	newOrder->next = nullptr;
 	
 	if(head == nullptr){
-		head = newbooking;
-		tail = newbooking;
+		head = newOrder;
+		tail = newOrder;
 	} else{
-		tail->next = newbooking;
-		tail = newbooking;
+		tail->next = newOrder;
+		tail = newOrder;
 	}
 	
-	cout << "\n[SUCCESS] Booking ID"<<newbooking->bookingid<<"has been successfully added to the system!\n";
+	cout << "\n[SUCCESS] Order ID"<<newOrder->orderId<<"has been successfully added to the system!\n";
 }
 
-void customer::displaybookings(){
-	cout<<"\n-- My Booking Records --\n";
+void Customer::displayOrders(){
+	cout<<"\n-- My Order Records --\n";
 	
 	if(head == nullptr){
-		cout<<"[INFO] You have no bookings. Go to booking!\n";
+		cout<<"[INFO] You have no order. Go to order!\n";
 		return;
 	}
 	
-	booking* current = head;
+	Order* current = head;
 	int recordcount = 1;
 	
 	while(current != nullptr){
 		cout<<"Record #"<< recordcount<<"\n";
-		cout << "  Booking ID : " << current->bookingid << "\n";
-        cout << "  Product ID : " << current->productid << "\n";
-        cout << "  Quantity   : " << current->quantity << "\n";
-        cout << "  Order Date : " << current->orderdate << "\n";
+		cout << "  Order ID : " << current->orderId << "\n";
+        cout << "  Product ID : " << current->productId << "\n";
+        cout << "  Quantity   : " << current->dispatchQuantity << "\n";
+        cout << "  Order Date : " << current->orderDate << "\n";
         cout << "---------------------------------\n";
         
         current = current->next;
@@ -57,29 +58,29 @@ void customer::displaybookings(){
 	cout <<"[SYSTEM] End of records.\n";
 }
 
-void customer::searchbooking() {
-	cout<<"\n-- Search Booking Record --\n";
+void Customer::searchOrder() {
+	cout<<"\n-- Search Order Record --\n";
 	
 	if(head == nullptr){
-		cout << "[INFO] System id empty. No bookings to search.\n";
+		cout << "[INFO] System id empty. No orders to search.\n";
 		return;
 	}
 	
-	int targetid;
-	cout<< "Enter the Booking ID you want to search: ";
-	cin>> targetid;
+	int targetId;
+	cout<< "Enter the Order ID you want to search: ";
+	cin>> targetId;
 	
-	booking*current = head;
+	Order*current = head;
 	bool found = false;
 	
 	while(current != nullptr){
-		if (current->bookingid == targetid){
+		if (current->orderId == targetId){
 			cout << "\n[SUCCESS] Record Found!\n";
             cout << "---------------------------------\n";
-            cout << "  Booking ID : " << current->bookingid << "\n";
-            cout << "  Product ID : " << current->productid << "\n";
-            cout << "  Quantity   : " << current->quantity << "\n";
-            cout << "  Order Date : " << current->orderdate << "\n";
+            cout << "  Order ID : " << current->orderId << "\n";
+            cout << "  Product ID : " << current->productId << "\n";
+            cout << "  Quantity   : " << current->dispatchQuantity << "\n";
+            cout << "  Order Date : " << current->orderDate << "\n";
             cout << "---------------------------------\n";
             found = true;
             break;
@@ -87,38 +88,38 @@ void customer::searchbooking() {
 		current = current->next;
 	}
 	if(!found){
-		cout << "\n[ERROR] Booking ID " << targetid << " not found in the system.\n";
+		cout << "\n[ERROR] Order ID " << targetId << " not found in the system.\n";
 	}
 }
 
-void customer::editbooking(){
+void Customer::editOrder(){
 	cout << "\n--- Edit Booking Details ---\n";
 	if (head == nullptr) {
    	cout<<"[INFO] System is empty. No bookings to edit.\n";
 	return;
 }
 
-int targetid;
+int targetId;
 cout<< "Enter the Booking ID you want to edit: ";
-cin>>targetid;
+cin>>targetId;
 
-booking* current = head;
+Order* current = head;
 bool found = false;
 
 while(current != nullptr){
-	if(current->bookingid == targetid){
+	if(current->orderId == targetId){
 		cout<<"\n[RECORD FOUND]\n";
-		cout<<"Current Quantity for Product " << current->productid << " is: " << current->quantity << "\n";
+		cout<<"Current Quantity for Product " << current->productId << " is: " << current->dispatchQuantity << "\n";
 		
-		int newquantity;
+		int newQuantity;
 		cout<<"Enter NEW Quantity: ";
-		cin>>newquantity;
+		cin>>newQuantity;
 		
-		if (newquantity<0){
+		if (newQuantity<0){
 			cout<<"[ERROR] Quantity cannot be negative. Update aborted.\n";
 		} else{
-			current->quantity = newquantity;
-			cout<<"[SUCCESS] Booking ID " << targetid << " has been updated successfully!\n";
+			current->dispatchQuantity = newQuantity;
+			cout<<"[SUCCESS] Order ID " << targetId << " has been updated successfully!\n";
 		}
 		found = true;
 		break;
@@ -126,11 +127,11 @@ while(current != nullptr){
 	current = current->next;
 }
 if(!found){
-	cout << "\n[ERROR] Booking ID " << targetid << " not found in the system.\n";
+	cout << "\n[ERROR] Order ID " << targetId << " not found in the system.\n";
 }
 }
 
-void customer::generatereport(){
+void Customer::generateReport(){
 	cout<< "\n--- Generating Booking Summary Report ---\n";
 	
 	if(head == nullptr){
@@ -139,7 +140,7 @@ void customer::generatereport(){
 	}
 	
 	cout << "[SYSTEM] Sorting records by Quantity (Highest to Lowest)...\n";
-    sortbookings(2);
+    sortOrders(2);
 	
 	ofstream outFile("BookingSummary.txt");
 	
@@ -149,15 +150,15 @@ void customer::generatereport(){
 	}
 	
 	outFile << "=========================================\n";
-    outFile << "        BOOKING SUMMARY REPORT           \n";
+    outFile << "        Order SUMMARY REPORT           \n";
     outFile << "=========================================\n";
     
-    booking* current = head;
+    Order* current = head;
     while (current!= nullptr){
-    	outFile << "Booking ID: " << current->bookingid
-                << " | Product ID: " << current->productid
-                << " | Quantity: " << current->quantity
-                << " | Date: " << current->orderdate << "\n";
+    	outFile << "Order ID: " << current->orderId
+                << " | Product ID: " << current->productId
+                << " | Quantity: " << current->dispatchQuantity
+                << " | Date: " << current->orderDate << "\n";
                 
         current = current->next;
 	}
@@ -176,14 +177,14 @@ void customer::generatereport(){
 	inFile.close();
 }
 
-void customer::sortbookings(int criteria) {
+void Customer::sortOrders(int criteria) {
     if (head == nullptr || head->next == nullptr) {
         return;
     }
 
     bool swapped;
-    booking* current;
-    booking* lastPtr = nullptr;
+    Order* current;
+    Order* lastPtr = nullptr;
 
     do {
         swapped = false;
@@ -193,32 +194,32 @@ void customer::sortbookings(int criteria) {
             bool needswap = false;
 
             if (criteria == 1) {
-                if (current->bookingid > current->next->bookingid) {
+                if (current->orderId > current->next->orderId) {
                     needswap = true;
                 }
             }
             else if (criteria == 2) {
-                if (current->quantity < current->next->quantity) {
+                if (current->dispatchQuantity < current->next->dispatchQuantity) {
                     needswap = true;
                 }
             }
 
             if (needswap) {
-                int tempid = current->bookingid;
-                current->bookingid = current->next->bookingid;
-                current->next->bookingid = tempid;
+                int tempId = current->orderId;
+                current->orderId = current->next->orderId;
+                current->next->orderId = tempId;
 
-                int tempprodid = current->productid;
-                current->productid = current->next->productid;
-                current->next->productid = tempprodid;
+                int tempprodId = current->productId;
+                current->productId = current->next->productId;
+                current->next->productId = tempprodId;
 
-                int tempqty = current->quantity;
-                current->quantity = current->next->quantity;
-                current->next->quantity = tempqty;
+                int tempQty = current->dispatchQuantity;
+                current->dispatchQuantity = current->next->dispatchQuantity;
+                current->next->dispatchQuantity = tempQty;
 
-                string tempdate = current->orderdate;
-                current->orderdate = current->next->orderdate;
-                current->next->orderdate = tempdate;
+                string tempDate = current->orderDate;
+                current->orderDate = current->next->orderDate;
+                current->next->orderDate = tempDate;
 
                 swapped = true;
             }
@@ -230,7 +231,9 @@ void customer::sortbookings(int criteria) {
     cout << "\n[SUCCESS] Records sorted successfully!\n";
 }
 
-void customer::displayMenu(){
+
+
+void Customer::displayMenu(){
 	int choice = 0;
 	bool keepRunning = true;
 	
@@ -238,12 +241,13 @@ void customer::displayMenu(){
 		cout<<"\n==============================\n";
 		cout<<"\n       Customer Dashboard     \n";
 		cout<<"\n==============================\n";
-		cout<<"1. Make a New Booking\n";
-		cout<<"2. Edit Booking Details\n";
-		cout<<"3. View the Bookings\n";
-		cout<<"4. Search Bookings\n";
-		cout<<"5. Generate Booking Report\n";
-		cout<<"6. Logout\n";
+		cout<<"1. Make a New Order\n";
+		cout<<"2. Edit Order Details\n";
+		cout<<"3. Delete the Orders\n";
+		cout<<"4. View the Orders\n";
+		cout<<"5. Search Orders\n";
+		cout<<"6. Generate Order Report\n";
+		cout<<"7. Logout\n";
 		cout<<"\n==============================\n";
 		cout<<"Enter your Choice (1-6): ";
 		
@@ -257,27 +261,31 @@ void customer::displayMenu(){
 		}
 		switch (choice){
 			case 1:
-				cout<<"\n[SYSTEM] Loading Add Booking Module...\n";
-				addbooking();
+				cout<<"\n[SYSTEM] Loading Add Order Module...\n";
+				addOrder();
 				break;
 			case 2:
-				cout<<"\n[SYSTEM] Loadng Edit Booking Module...\n";
-				editbooking();
+				cout<<"\n[SYSTEM] Loadng Edit Order Module...\n";
+				editOrder();
 				break;
 			case 3:
-				cout<<"\n[SYSTEM] Displaying All Records...\n";
-				displaybookings();
-				break;
+                cout << "\n[SYSTEM] Loading Delete Order Module...\n";
+                deleteOrder(); 
+                break;
 			case 4:
 				cout<<"\n[SYSTEM] Displaying All Records...\n";
+				displayOrders();
 				break;
 			case 5:
-				cout<<"\n[SYSTEM] Loading Search Module...\n";
-				searchbooking();
+				cout<<"\n[SYSTEM] Displaying All Records...\n";
 				break;
 			case 6:
+				cout<<"\n[SYSTEM] Loading Search Module...\n";
+				searchOrder();
+				break;
+			case 7:
 				cout<<"\n[SYSTEM] Generating Booking's Report...\n";
-				generatereport();
+				generateReport();
 				break;
 		}
 	}
@@ -290,7 +298,7 @@ catch(string errorMsg){
 }
 
 catch(int invalidChoice){
-	cout<<"\n[ERROR]"<<invalidChoice<<"is OUT of Range! Please Enter 1-6...\n";
+	cout<<"\n[ERROR]"<<invalidChoice<<"is OUT of Range! Please Enter 1-7...\n";
 }
 		}
 		

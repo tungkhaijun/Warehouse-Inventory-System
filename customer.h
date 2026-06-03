@@ -3,43 +3,23 @@
 
 #include<iostream>
 #include<string>
+#include"Lead_backend.cpp"
 
 using namespace std;
 
-struct booking {
-	int bookingid;
-	int productid;
-	int quantity;
-	string orderdate;
-	
-	booking* next;
-};
-
-class user{
+class Customer : public User{
 	private:
-		string username;
-		string password;
-		
+		Order* head;
+		Order* tail;
 	public:
-		user(string u, string p) : username(u),password(p){}
-		virtual void displayMenu() = 0;
-		virtual ~user(){}
-};
-
-class customer : public user{
-	private:
-		booking* head;
-		booking* tail;
-	
-	public:
-		customer(string u, string p) : user(u, p) {
+		Customer(string u, string p) : User(u, p) {
 		head = nullptr;
 		tail = nullptr; }
 		
-		~customer(){
-			booking* current = head;
+		~Customer(){
+			Order* current = head;
 			while (current != nullptr){
-				booking* nextNode = current->next;
+				Order* nextNode = current->next;
 				delete current;
 				current = nextNode;
 			}
@@ -47,12 +27,13 @@ class customer : public user{
 		
 void displayMenu() override;
 
-void addbooking();
-void editbooking();
-void displaybookings();
-void searchbooking();
-void generatereport();
-void sortbookings(int criteria);
+void addOrder();
+void editOrder();
+void deleteOrder();
+void displayOrders();
+void searchOrder();
+void generateReport();
+void sortOrders(int criteria);
 };
 
 #endif
