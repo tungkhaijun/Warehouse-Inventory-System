@@ -3,7 +3,7 @@
 
 #include<iostream>
 #include<string>
-#include"Lead_backend.cpp"
+#include"backend.h"
 
 using namespace std;
 
@@ -12,7 +12,7 @@ class Customer : public User{
 		Order* head;
 		Order* tail;
 	public:
-		Customer(string u, string p) : User(u, p) {
+		Customer(string u, string p) : User(u, p, "Manager") {
 		head = nullptr;
 		tail = nullptr; }
 		
