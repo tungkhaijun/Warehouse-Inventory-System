@@ -3,7 +3,7 @@
 #include <fstream>
 #include <string>
 #include "structures.h"
-//#include "customer.h"
+#include "customer.h"
 //#include "backend.h"
 //#include "admin.h"
 
@@ -223,10 +223,98 @@ void checkSupportFile(const char* fileName){
 	
 	void checkRequiredFiles(){
 		checkSupportFile("Suppliers.txt");
-		checkSupportFile("Logistic.txt");
+		checkSupportFile("Logistics.txt");
 	}
+	
+//8.Check whether username exist
+bool isUsernameExist(string username){
+	User* temp = userHead;
+	
+	while (temp != NULL){
+		if(temp->username == username){
+			return true;
+		}
+		temp = temp->next;
+	}
+	return false;
+}
 
-//8. Authentication for User
+//9. Add usernode to linked list
+void addUserToList(string username, string password, string role){
+	User* newNode = new User;
+	newNode->username= username;
+	newNode->password= password;
+	newNode->role = role;
+	newNode->next = NULL;
+	
+	if(userHead == NULL){
+		userHead = newNode;
+	}
+	else{
+		User* temp = userHead;
+		
+		while (temp->next != NULL){
+			temp = temp->next;
+		}
+		temp->next = newNode;
+	}
+}
+
+//10.Save user to Admin.txt
+void saveUsersToFile(){
+	ofstream outFile("Admin.txt", ios::trunc);
+	
+	if(!outFile){
+		cout << "System Error: Could not open Admin.txt to save user data." << endl;
+		return;
+	}
+	
+	User* temp = userHead;
+	
+	while (temp != NULL){
+		outFile << temp->username << "|"
+		        << temp->password << "|"
+		        << temp->role <<"\n";
+		        
+		temp = temp->next;
+	}
+	
+	outFile.close();
+	cout <<"System: User data succesfully saved to file." << endl;
+}
+
+//11. Customer registration function
+void registerCustomer(){
+	string username, password, confirmPassword;
+	
+	cout <<"\n~+~Customer Registration~+~" <<endl;
+	
+	cout <<"Enter username: ";
+	cin >> username;
+	
+	if (isUsernameExist(username)){
+		cout <<"System Error: Username already exists. Please try another username." << endl;
+		return;
+	}
+	
+	cout << "Enter password: ";
+	cin >> password;
+	
+	cout << "Confirm password: ";
+	cin >> confirmPassword;
+	
+	if (password != confirmPassword){
+		cout << "System Error: Password confirmation does not match." <<endl;
+		return;
+	}
+	
+	addUserToList(username, password, "Customer");
+	saveUsersToFile();
+	
+	cout <<"System: Customer account registered successfully." << endl;
+}
+
+//12. Authentication for User
 bool authenticateUser(string inputUser, string inputPass, string expectedRole) {
     User* temp = userHead;
     
@@ -240,7 +328,7 @@ bool authenticateUser(string inputUser, string inputPass, string expectedRole) {
 }
 
 
-//9. Clear Memory to prevent Memory Leak
+//13. Clear Memory to prevent Memory Leak
 void clearMemory(){
 	Product* productTemp;
 	
@@ -270,7 +358,7 @@ void clearMemory(){
 }
 
 
-//10. Main Menu
+//14. Main Menu
 int main() {
     cout <<"==========================================="<<endl;
     cout <<"        Warehouse Inventory System         "<<endl;
@@ -288,7 +376,8 @@ int main() {
     	cout <<"\n>>> Login Menu <<<" <<endl;
     	cout << "1. Login as Admin " <<endl;
     	cout << "2. Login as Customer "<<endl;
-        cout << "3. Exit System" <<endl;
+    	cout << "3. Register as Customer" <<endl;
+        cout << "4. Exit System" <<endl;
         cout << "Select your role: ";
         
         int choice = getSafeInput();
@@ -323,15 +412,18 @@ int main() {
                 if (authenticateUser(inputUser, inputPass, "Customer")) {
                     cout << "\nAccess Granted. Welcome, Customer " << inputUser << "!" << endl;
                     
-                    // TODO: Call Member 3's customer module here
-                    // Customer customerObj;
-                    // CustomerObj.displayMenu();
+                    Customer customerObj(inputUser, inputPass);
+                    customerObj.displayMenu();
                 } else {
                     cout << "\nAccess Denied. Incorrect username or password." << endl;
                 }
                 break;
             }
-            case 3: {
+            case 3:{
+            	registerCustomer();
+				break;
+			}
+            case 4: {
                 cout << "\nSystem: Preparing to shutdown..." << endl;
                 isRunning = false;
                 break;
@@ -344,6 +436,7 @@ int main() {
     // Save only inventory data upon exit (User data does not change)
     saveDataToFile();
     saveOrdersToFile();
+    saveUsersToFile();
     clearMemory();
     
     cout << "System Terminated." << endl;
