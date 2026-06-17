@@ -3,13 +3,14 @@
 #include <fstream>
 #include <string>
 #include "structures.h"
-#include "customer.h"
-#include "backend.h"
+//#include "customer.h"
+//#include "backend.h"
 //#include "admin.h"
 
 using namespace std;
 
 Product* inventoryHead = NULL;
+Order* orderHead = NULL;
 User* userHead = NULL;
 
 //1. Safe Input(Prevent Crash using Try-Catch)
@@ -44,20 +45,20 @@ void loadDataFromFile(){
 		return;
 	}
 	
-	string id, name, category, location, supplier;
-	int qty;
-	double price;
+	int productId, stockQuantity;
+	string productName, category, zone, supplier;
+	double productPrice;
 	
-	while (inFile >> id >> name >> category >> qty >> location >> supplier >> price){
+	while (inFile >> productId >> productName >> category >> stockQuantity >> zone >> supplier >> productPrice){
 		
 		Product* newNode = new Product;
-		newNode->productId = id;
-		newNode->productName = name;
+		newNode->productId = productId;
+		newNode->productName = productName;
 		newNode->category = category;
-		newNode->stockQuantity = qty;
-		newNode->zone = location;
+		newNode->stockQuantity = stockQuantity;
+		newNode->zone = zone;
 		newNode->supplier = supplier;
-		newNode->productPrice = price;
+		newNode->productPrice = productPrice;
 		newNode->next = NULL;
 		
 		if (inventoryHead == NULL){
@@ -74,7 +75,44 @@ void loadDataFromFile(){
 	cout<<"System: Inventory data loaded succesfully."<<endl;
 }
 
-//3. Load Admin Data
+//3. Load Order Data
+void loadOrdersFromFile(){
+	ifstream inFile("Orders.txt");
+	
+	if(!inFile){
+		cout <<"System Warning: Orders.txt not found. Starting with empty order records." << endl;
+		return;
+	}
+	
+	int orderId, productId, dispatchQuantity;
+	string operatorName, orderDate;
+	
+	while (inFile >> orderId >> productId >> dispatchQuantity >> operatorName >> orderDate){
+	   Order* newNode = new Order;
+	   newNode->orderId = orderId;
+	   newNode->productId = productId;
+	   newNode->dispatchQuantity = dispatchQuantity;
+	   newNode->operatorName = operatorName;
+	   newNode->orderDate = orderDate;
+	   newNode->next = NULL;
+	   
+	   if(orderHead == NULL){
+	   	orderHead = newNode;
+	   } else{
+	   	Order* temp = orderHead;
+	   	while (temp->next !=NULL){
+	   		temp = temp->next;
+		   }
+		   temp->next = newNode;
+	   }
+   }
+
+  inFile.close();
+  cout << "System: Order data loaded successfully." << endl;
+}
+
+
+//4. Load Admin Data
 void loadUsersFromFile(){
 	ifstream inFile("Admin.txt");
 	
@@ -115,7 +153,8 @@ void loadUsersFromFile(){
 	 cout <<"System: User credentials loaded succesfully." <<endl;	
 }
 
-//4. Save Inventory Data
+
+//5. Save Inventory Data
 void saveDataToFile(){
 	ofstream outFile("Inventory.txt", ios::trunc);
 	
@@ -142,7 +181,52 @@ void saveDataToFile(){
 	cout << "System: All inventory data succesfully saved to file." << endl;
 }
 
-//5. Authentication for User
+
+//6. Save Order Data
+void saveOrdersToFile(){
+	ofstream outFile("Orders.txt", ios::trunc);
+	
+	if(!outFile){
+		cout << "System Error: Could not open Orders.txt to save data." << endl;
+		return;
+	}
+	
+	Order* temp = orderHead;
+	
+	while (temp != NULL){
+		outFile << temp->orderId << " "
+                << temp->productId << " "
+				<< temp->dispatchQuantity << " "
+				<< temp->operatorName << " "
+				<< temp->orderDate <<"\n";
+				
+	  temp = temp->next;		
+	}
+	
+	outFile.close();
+	cout << "System: Order data successfully saved to file." << endl;
+}
+
+//7. Check Required for User
+void checkSupportFile(const char* fileName){
+	ifstream inFile(fileName);
+	
+	if (!inFile){
+		ofstream createFile(fileName);
+		createFile.close();
+		cout <<"System Warning: " << fileName << " not found. Empty file created. " << endl;
+	  }else{
+	  	inFile.close();
+	  	cout <<"System: " << fileName << " is ready."<< endl;
+	  }
+	}
+	
+	void checkRequiredFiles(){
+		checkSupportFile("Suppliers.txt");
+		checkSupportFile("Logistic.txt");
+	}
+
+//8. Authentication for User
 bool authenticateUser(string inputUser, string inputPass, string expectedRole) {
     User* temp = userHead;
     
@@ -155,23 +239,56 @@ bool authenticateUser(string inputUser, string inputPass, string expectedRole) {
     return false; 
 }
 
-//6. Main Menu
+
+//9. Clear Memory to prevent Memory Leak
+void clearMemory(){
+	Product* productTemp;
+	
+	while (inventoryHead != NULL){
+		productTemp = inventoryHead;
+		inventoryHead = inventoryHead ->next;
+		delete productTemp;
+	}
+	
+	Order* orderTemp;
+	
+	while (orderHead != NULL){
+		orderTemp = orderHead;
+		orderHead = orderHead->next;
+		delete orderTemp;
+	}
+	
+	User* userTemp;
+	
+	while(userHead != NULL){
+		userTemp = userHead;
+		userHead = userHead->next;
+		delete userTemp;
+	}
+	
+	cout <<"System: Memory cleared safely." << endl;
+}
+
+
+//10. Main Menu
 int main() {
     cout <<"==========================================="<<endl;
-    cout <<"  Warehouse Inventory System Initializing  "<<endl;
+    cout <<"        Warehouse Inventory System         "<<endl;
     cout <<"==========================================="<<endl;
     
     loadDataFromFile();
     loadUsersFromFile();
+    loadOrdersFromFile();
+    checkRequiredFiles();
     
     bool isRunning = true;
     string inputUser, inputPass;
     while (isRunning){
     	cout <<"\n~+~ Main Gateway ~+~"<<endl;
     	cout <<"\n>>> Login Menu <<<" <<endl;
-    	cout << "1. Login as Admin " << endl;
-        cout << "2. Login as Manager " << endl;
-        cout << "3. Exit System" << endl;
+    	cout << "1. Login as Admin " <<endl;
+    	cout << "2. Login as Customer "<<endl;
+        cout << "3. Exit System" <<endl;
         cout << "Select your role: ";
         
         int choice = getSafeInput();
@@ -197,18 +314,18 @@ int main() {
                 break;
             }
             case 2: {
-                cout << "\n--- Manager Login ---" << endl;
+                cout << "\n--- Customer Login ---" << endl;
                 cout << "Username: ";
                 cin >> inputUser;
                 cout << "Password: ";
                 cin >> inputPass;
 
-                if (authenticateUser(inputUser, inputPass, "Manager")) {
-                    cout << "\nAccess Granted. Welcome, Manager " << inputUser << "!" << endl;
+                if (authenticateUser(inputUser, inputPass, "Customer")) {
+                    cout << "\nAccess Granted. Welcome, Customer " << inputUser << "!" << endl;
                     
-                    // TODO: Call Member 3's manager module here
-                    // Manager managerObj;
-                    // managerObj.displayMenu();
+                    // TODO: Call Member 3's customer module here
+                    // Customer customerObj;
+                    // CustomerObj.displayMenu();
                 } else {
                     cout << "\nAccess Denied. Incorrect username or password." << endl;
                 }
@@ -226,6 +343,8 @@ int main() {
 
     // Save only inventory data upon exit (User data does not change)
     saveDataToFile();
+    saveOrdersToFile();
+    clearMemory();
     
     cout << "System Terminated." << endl;
     return 0;
