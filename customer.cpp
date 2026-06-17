@@ -131,6 +131,45 @@ if(!found){
 }
 }
 
+void Customer::deleteOrder(){
+	if (head == nullptr){
+		cout<<"No Orders to delete!\n";
+		return;
+	}
+	
+	int targetId;
+	cout<<"Enter Order ID to delete: ";
+	cin>>targetId;
+	
+	Order* current = head;
+	Order* previous = nullptr;
+	
+	while (current !=nullptr && current->orderId !=targetId){
+		previous = current;
+		current = current->next;
+	}
+	
+	if (current == nullptr){
+		cout << "Error Order ID"<<targetId<<"is not found.\n";
+		return;
+	}
+	
+	if (previous == nullptr){
+		head = head->next;
+	} else {
+		previous->next = current->next;
+	}
+	
+	if (current == tail){
+		tail = previous;
+	}
+	
+	delete current;
+	
+	
+	cout<<"The Order deleted Successfully!\n";
+}
+
 void Customer::generateReport(){
 	cout<< "\n--- Generating Order Summary Report ---\n";
 	
@@ -246,6 +285,7 @@ void Customer::displayMenu(){
 		cout<<"3. Delete the Orders\n";
 		cout<<"4. View the Orders\n";
 		cout<<"5. Search Orders\n";
+		cout<<"6. Sort Orders\n";
 		cout<<"6. Generate Order Report\n";
 		cout<<"7. Logout\n";
 		cout<<"\n==============================\n";
@@ -256,7 +296,7 @@ void Customer::displayMenu(){
 			if(cin.fail()){
 				throw string("Invalid input detected! Please enter the valid number!");
 			}
-		if (choice < 1 || choice>6){
+		if (choice < 1 || choice>8){
 			throw choice;
 		}
 		switch (choice){
@@ -277,15 +317,35 @@ void Customer::displayMenu(){
 				displayOrders();
 				break;
 			case 5:
-				cout<<"\n[SYSTEM] Displaying All Records...\n";
-				break;
-			case 6:
-				cout<<"\n[SYSTEM] Loading Search Module...\n";
+				cout<<"\n[SYSTEM] Search The Records...\n";
 				searchOrder();
 				break;
+			case 6:
+				cout<<"\n[SYSTEM] Sorting the Orders...\n";{
+				int sortChoice;
+				cout<< "\nSort by:\n";
+				cout<<"1. Order ID ascending\n";
+				cout<<"2. Quantity descending\n";
+				cout<<"Enter Choice: ";
+				cin>>sortChoice;
+				
+				if(sortChoice == 1 || sortChoice == 2){
+					sortOrders(sortChoice);
+					displayOrders();
+				}else{
+					cout<<"[ERROR] Invalid sorting criteria.\n";
+				}
+				break;
+			}
+				
 			case 7:
 				cout<<"\n[SYSTEM] Generating Booking's Report...\n";
 				generateReport();
+				break;
+				
+			case 8:
+				cout << "\n[SYSTEM] Logging out...\n";
+				keepRunning = false;
 				break;
 		}
 	}
@@ -298,7 +358,7 @@ catch(string errorMsg){
 }
 
 catch(int invalidChoice){
-	cout<<"\n[ERROR]"<<invalidChoice<<"is OUT of Range! Please Enter 1-7...\n";
+	cout<<"\n[ERROR]"<<invalidChoice<<"is OUT of Range! Please Enter 1-8...\n";
 }
 		}
 		
