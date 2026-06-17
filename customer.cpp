@@ -132,17 +132,17 @@ if(!found){
 }
 
 void Customer::generateReport(){
-	cout<< "\n--- Generating Booking Summary Report ---\n";
+	cout<< "\n--- Generating Order Summary Report ---\n";
 	
 	if(head == nullptr){
-		cout<< "[INFO] System is empty. No bookings to report.\n";
+		cout<< "[INFO] System is empty. No orders to report.\n";
 		return;
 	}
 	
 	cout << "[SYSTEM] Sorting records by Quantity (Highest to Lowest)...\n";
     sortOrders(2);
 	
-	ofstream outFile("BookingSummary.txt");
+	ofstream outFile("OrderSummary.txt");
 	
 	if(!outFile){
 		cout<<"[ERROR] Unable to create report file!\n";
@@ -164,10 +164,10 @@ void Customer::generateReport(){
 	}
 	
 	outFile.close();
-	cout << "[SUCCESS] Report successfully saved to 'BookingSummary.txt'!\n";
+	cout << "[SUCCESS] Report successfully saved to 'OrderSummary.txt'!\n";
 	cout << "\n[SYSTEM] Retrieving data from text file...\n\n";
     
-    ifstream inFile("BookingSummary.txt");
+    ifstream inFile("OrderSummary.txt");
     string line;
     
     while(getline(inFile,line)){
