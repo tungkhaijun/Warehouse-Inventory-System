@@ -3,38 +3,32 @@
 
 #include<iostream>
 #include<string>
-#include"backend.h"
+//#include"backend.h"
 #include"structures.h"
 
 using namespace std;
+
+struct Order;
 
 class Customer : public User{
 	private:
 		Order* head;
 		Order* tail;
-		string currentUsername;
+		
+		string username;
+		string password;
 		
 	public:
-		Customer(string u, string p) : User(u, p, "Manager") {
-		head = nullptr;
-		tail = nullptr; }
+		Customer(string username = "", string password =""); 
+		~Customer();
 		
-		~Customer(){
-			Order* current = head;
-			while (current != nullptr){
-				Order* nextNode = current->next;
-				delete current;
-				current = nextNode;
-			}
-		}
 		
-void displayMenu() override;
 
 void addOrder();
-void editOrder();
-void deleteOrder();
 void displayOrders();
 void searchOrder();
+void editOrder();
+void deleteOrder();
 void generateReport();
 void sortOrders(int criteria);
 void displayMenu();

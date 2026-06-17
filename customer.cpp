@@ -1,9 +1,31 @@
 #include<iostream>
 #include<string>
 #include <fstream>
+#include"structures.h"
 #include"customer.h"
 
 using namespace std;
+
+Customer::Customer(string username , string password){
+	this->username = username;
+	this->password = password;
+	head = nullptr;
+	tail = nullptr;
+}
+
+Customer::~Customer(){
+	Order* current = head;
+	
+	while(current != nullptr){
+		Order* temp = current;
+		current = current->next;
+		delete temp;
+	}
+	
+	head = nullptr;
+	tail = nullptr;
+}
+
 void Customer::addOrder(){
 	Order* newOrder = new Order;
 	
