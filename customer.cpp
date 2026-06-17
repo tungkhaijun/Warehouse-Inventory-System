@@ -100,7 +100,7 @@ void Customer::editOrder(){
 }
 
 int targetId;
-cout<< "Enter the Booking ID you want to edit: ";
+cout<< "Enter the Order ID you want to edit: ";
 cin>>targetId;
 
 Order* current = head;
