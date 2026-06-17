@@ -286,10 +286,10 @@ void Customer::displayMenu(){
 		cout<<"4. View the Orders\n";
 		cout<<"5. Search Orders\n";
 		cout<<"6. Sort Orders\n";
-		cout<<"6. Generate Order Report\n";
-		cout<<"7. Logout\n";
+		cout<<"7. Generate Order Report\n";
+		cout<<"8. Logout\n";
 		cout<<"\n==============================\n";
-		cout<<"Enter your Choice (1-6): ";
+		cout<<"Enter your Choice (1-8): ";
 		
 		try{
 			cin>>choice;
@@ -322,6 +322,7 @@ void Customer::displayMenu(){
 				break;
 			case 6:
 				cout<<"\n[SYSTEM] Sorting the Orders...\n";{
+					
 				int sortChoice;
 				cout<< "\nSort by:\n";
 				cout<<"1. Order ID ascending\n";
