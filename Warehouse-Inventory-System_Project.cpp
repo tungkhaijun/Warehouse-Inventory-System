@@ -110,9 +110,8 @@ int getSafeInput(){
     }
 }
 
-// =========================================================
+
 // File I/O Engine (Aligned flawlessly with admin.cpp specs)
-// =========================================================
 
 void saveInventoryToFile(ProductLinkedList& inv) {
     ofstream outFile("Inventory.txt", ios::trunc); 
@@ -328,10 +327,8 @@ bool authenticateUser(string inputUser, string inputPass, string expectedRole) {
     return false; 
 }
 
-// =========================================================
-// Linked List Sorting & Searching Engine 
-// =========================================================
 
+// Linked List Sorting & Searching Engine 
 ProductLinkedList::ProductLinkedList() { head = NULL; count = 0; }
 ProductLinkedList::~ProductLinkedList() { clearAll(); }
 void ProductLinkedList::clearAll() {
@@ -472,10 +469,7 @@ void ProductLinkedList::display() {
 }
 
 
-// =========================================================
 // ROLE CLASSES IMPLEMENTATION (Admin Specs Compliant)
-// =========================================================
-
 class AdminMenu : public UserClass {
 public:
     AdminMenu(string un, string pw) : UserClass(un, pw, "Admin") {}
@@ -699,10 +693,10 @@ void Customer::addOrder() {
         t->next = globalNode;
     }
 
-    // 3. Deduct actual warehouse stocks instantly & write directly to disk files
+    // 3. Deduct actual stocks instantly & write directly to disk files
     checkProd->stockQuantity -= newOrder->dispatchQuantity;
     saveInventoryToFile(inventory);
-    saveOrdersToFile(); // CRITICAL FIX: Missing instant dynamic save for operations stability!
+    saveOrdersToFile(); 
     
     cout << "\n[SUCCESS] Order created successfully! Stock updated dynamically.\n";
 }
