@@ -5,91 +5,91 @@
 #include <limits>
 #include <algorithm>
 #include <cctype>
+#include <cstdlib>
 
 using namespace std;
 
-// Helper functions
-// remove unwanted characters from input
+// Helper function: remove unwanted characters from input
 string cleanString(string str) {
-	    while (!str.empty() && (str.back() == '\r' || str.back() == '\n' || 
-	                            str.back() == ' ' || isspace(str.back()) || 
-	                            (unsigned char)str.back() == 12289 || str.back() == '?')) {
-	        str.pop_back();
-	    }
-	    return str;
-	}
+    while (!str.empty() && (str.back() == '\r' || str.back() == '\n' || 
+                            str.back() == ' ' || isspace((unsigned char)str.back()) || 
+                            (unsigned char)str.back() == 12289 || str.back() == '?')) {
+        str.pop_back();
+    }
+    return str;
+}
 
-// PART 1: CORE STRUCT DEFINITIONS (structures.h)
+// CORE STRUCT DEFINITIONS
 struct Product {
-	    int productId;
-	    string productName;
-	    string category;
-	    int stockQuantity;
-	    string zone;
-	    string supplier;
-	    double productPrice;
-	    
-	    Product* next;
+    int productId;
+    string productName;
+    string category;
+    int stockQuantity;
+    string zone;
+    string supplier;
+    double productPrice;
+    
+    Product* next;
 };
 
 struct Order {
-	    int orderId;
-	    int productId;
-	    int dispatchQuantity;
-	    string operatorName;
-	    string orderDate;
-	    
-	    Order* next;
+    int orderId;
+    int productId;
+    int dispatchQuantity;
+    string operatorName;
+    string orderDate;
+    
+    Order* next;
 };
 
 struct User {
-	    string username;
-	    string password; 
-	    string role; // User,Admin,Manager,Customer
-	    
-	    User* next; 
+    string username;
+    string password; 
+    string role; // User, Admin, SuperAdmin, Customer
+    
+    User* next; 
 };
 
-// PART 2: CLASS DECLARATIONS & OOP INHERITANCE (backend.h)
+// PART 2: CLASS DECLARATIONS & OOP INHERITANCE
 class UserClass {
-	protected:
-	    string username;
-	    string password; 
-	    string role; 
-	public:
-	    UserClass(string un, string pw, string r) : username(un), password(pw), role(r) {}
-	    virtual ~UserClass() {} 
-	    virtual void displayMenu() = 0; 
-	    
-	    string getUsername() { return username; }
-	    string getPassword() { return password; }
-	    string getRole() { return role; }
+protected:
+    string username;
+    string password; 
+    string role; 
+public:
+    UserClass(string un, string pw, string r) : username(un), password(pw), role(r) {}
+    virtual ~UserClass() {} 
+    virtual void displayMenu() = 0; 
+    
+    string getUsername() { return username; }
+    string getPassword() { return password; }
+    string getRole() { return role; }
 };
 
 class ProductLinkedList {
-	private:
-	    Product* head;
-	    int count;
-	public:
-	    ProductLinkedList();
-	    ~ProductLinkedList();
-	    void Merge(Product** arr, int lpos, int rpos, int rend, int sortBy);
-	    void MergeSortRec(Product** arr, int left, int right, int sortBy);
-	    void insertNode(int id, string name, string cat, int qty, string z, string sup, double price);
-	    void deleteNode(int id);
-	    void sortList(int sortBy);
-	    Product* binarySearch(int targetId);
-	    void display();
-	    Product* getHead() { return head; }
-	    void clearAll(); 
+private:
+    Product* head;
+    int count;
+public:
+    ProductLinkedList();
+    ~ProductLinkedList();
+    void insertNode(int id, string name, string cat, int qty, string z, string sup, double price);
+    void deleteNode(int id);
+    void sortList(int sortBy);
+    Product* binarySearch(int targetId);
+    void display();
+    Product* getHead() { return head; }
+    void clearAll(); 
 };
 
 // Global variables
-	ProductLinkedList inventory; 
-	Order* orderHead = nullptr;  
-	User* userHead = nullptr;    
 
-// File handling
+ProductLinkedList inventory; 
+Order* orderHead = nullptr;  
+User* userHead = nullptr;    
+
+// File handling safety check
+
 int getSafeInput(){
     int input;
     while (true){
@@ -112,10 +112,50 @@ int getSafeInput(){
     }
 }
 
+// File I/O Engine 
+
+void saveInventoryToFile(ProductLinkedList& inv) {
+    ofstream outFile("Inventory.txt", ios::trunc); 
+    if (!outFile) {
+        cout << "[System Warning] Cannot write to Inventory.txt!" << endl;
+        return;
+    }
+    Product* temp = inv.getHead();
+    while (temp != NULL) {
+        outFile << temp->productId << "|" 
+                << temp->productName << "|" 
+                << temp->category << "|" 
+                << temp->stockQuantity << "|" 
+                << temp->zone << "|" 
+                << temp->supplier << "|" 
+                << temp->productPrice << "\n";
+        temp = temp->next;
+    }
+    outFile.close();
+    cout << "[System] Inventory.txt auto-saved." << endl;
+}
+
+void saveUsersToFile() {
+    ofstream outFile("Admin.txt", ios::trunc);
+    if (!outFile) {
+        cout << "[System Warning] Cannot write to Admin.txt!" << endl;
+        return;
+    }
+    User* temp = userHead;
+    while (temp != NULL) {
+        outFile << temp->username << "|" 
+                << temp->password << "|" 
+                << temp->role << "\n";
+        temp = temp->next;
+    }
+    outFile.close();
+    cout << "[System] Admin.txt auto-saved." << endl;
+}
+
 void loadDataFromFile(){
     ifstream inFile("Inventory.txt");
     if (!inFile){
-        cout << "System Warning: Inventory.txt not found. Starting with empty inventory." << endl;
+        cout << "System Notice: Inventory.txt not found. Starting with empty inventory." << endl;
         return;
     }
     
@@ -126,49 +166,18 @@ void loadDataFromFile(){
         string idStr, name, cat, qtyStr, z, sup, priceStr;
         
         if (getline(ss, idStr, '|') && getline(ss, name, '|') && getline(ss, cat, '|') &&
-            getline(ss, qtyStr, '|') && getline(ss, z, '|') && getline(ss, sup, '|') && getline(ss, priceStr)) {
+            getline(ss, qtyStr, '|') && getline(ss, z, '|') && getline(ss, sup, '|')) {
+            getline(ss, priceStr);
             
-            inventory.insertNode(stoi(idStr), cleanString(name), cleanString(cat), stoi(qtyStr), cleanString(z), cleanString(sup), stod(priceStr));
+            int id = atoi(idStr.c_str());
+            int qty = atoi(qtyStr.c_str());
+            double price = atof(priceStr.c_str());
+            
+            inventory.insertNode(id, cleanString(name), cleanString(cat), qty, cleanString(z), cleanString(sup), price);
         }
     }
     inFile.close();
     cout << "System: Inventory data loaded successfully via '|' delimiter." << endl;
-}
-
-void loadOrdersFromFile(){
-    ifstream inFile("Orders.txt");
-    if(!inFile){
-        cout << "System Warning: Orders.txt not found. Starting with empty order records." << endl;
-        return;
-    }
-    
-    string line;
-    while (getline(inFile, line)) {
-        if (line.empty()) continue;
-        stringstream ss(line);
-        string oId, pId, qty, opName, oDate;
-        
-        if (getline(ss, oId, '|') && getline(ss, pId, '|') && getline(ss, qty, '|') && 
-            getline(ss, opName, '|') && getline(ss, oDate)) {
-            Order* newNode = new Order;
-            newNode->orderId = stoi(oId);
-            newNode->productId = stoi(pId);
-            newNode->dispatchQuantity = stoi(qty);
-            newNode->operatorName = cleanString(opName);
-            newNode->orderDate = cleanString(oDate); // ?????????? \r ?????
-            newNode->next = NULL;
-            
-            if(orderHead == NULL){
-                orderHead = newNode;
-            } else{
-                Order* temp = orderHead;
-                while (temp->next != NULL){ temp = temp->next; }
-                temp->next = newNode;
-            }
-        }
-    }
-    inFile.close();
-    cout << "System: Order data loaded successfully." << endl;
 }
 
 void loadUsersFromFile(){
@@ -186,6 +195,8 @@ void loadUsersFromFile(){
         user = cleanString(user);
         pass = cleanString(pass);
         role = cleanString(role);
+
+        if(user.empty()) continue;
 
         User* newNode = new User;
         newNode->username = user;
@@ -205,22 +216,41 @@ void loadUsersFromFile(){
      cout << "System: User credentials loaded successfully." << endl;  
 }
 
-void saveDataToFile(){
-    ofstream outFile("Inventory.txt", ios::trunc);
-    if(!outFile){
-        cout<<"System Error: Could not open Inventory.txt to save data."<<endl;
+void loadOrdersFromFile(){
+    ifstream inFile("Orders.txt");
+    if(!inFile){
+        cout << "System Warning: Orders.txt not found. Starting with empty order records." << endl;
         return;
     }
     
-    Product* temp = inventory.getHead(); 
-    while(temp != NULL){
-        outFile << temp->productId << "|" << temp->productName << "|" << temp->category << "|"
-                << temp->stockQuantity << "|" << temp->zone << "|" << temp->supplier << "|"
-                << temp->productPrice << "\n";
-        temp = temp->next;
+    string line;
+    while (getline(inFile, line)) {
+        if (line.empty()) continue;
+        stringstream ss(line);
+        string oId, pId, qty, opName, oDate;
+        
+        if (getline(ss, oId, '|') && getline(ss, pId, '|') && getline(ss, qty, '|') && 
+            getline(ss, opName, '|')) {
+            getline(ss, oDate);
+            Order* newNode = new Order;
+            newNode->orderId = stoi(oId);
+            newNode->productId = stoi(pId);
+            newNode->dispatchQuantity = stoi(qty);
+            newNode->operatorName = cleanString(opName);
+            newNode->orderDate = cleanString(oDate); 
+            newNode->next = NULL;
+            
+            if(orderHead == NULL){
+                orderHead = newNode;
+            } else{
+                Order* temp = orderHead;
+                while (temp->next != NULL){ temp = temp->next; }
+                temp->next = newNode;
+            }
+        }
     }
-    outFile.close();
-    cout << "System: All inventory data successfully saved to file." << endl;
+    inFile.close();
+    cout << "System: Order data loaded successfully." << endl;
 }
 
 void saveOrdersToFile(){
@@ -256,7 +286,7 @@ void checkRequiredFiles(){
     checkSupportFile("Suppliers.txt");
     checkSupportFile("Logistics.txt");
 }
-    
+
 bool isUsernameExist(string username){
     User* temp = userHead;
     while (temp != NULL){
@@ -282,43 +312,6 @@ void addUserToList(string username, string password, string role){
     }
 }
 
-void saveUsersToFile(){
-    ofstream outFile("Admin.txt", ios::trunc);
-    if(!outFile){
-        cout << "System Error: Could not open Admin.txt to save user data." << endl;
-        return;
-    }
-    User* temp = userHead;
-    while (temp != NULL){
-        outFile << temp->username << "|" << temp->password << "|" << temp->role <<"\n";
-        temp = temp->next;
-    }
-    outFile.close();
-    cout <<"System: User data successfully saved to file." << endl;
-}
-
-void registerCustomer(){
-    string username, password, confirmPassword;
-    cout <<"\n~+~Customer Registration~+~" <<endl;
-    cout <<"Enter username: "; cin >> username;
-    
-    if (isUsernameExist(username)){
-        cout <<"System Error: Username already exists. Please try another username." << endl;
-        return;
-    }
-    cout << "Enter password: "; cin >> password;
-    cout << "Confirm password: "; cin >> confirmPassword;
-    
-    if (password != confirmPassword){
-        cout << "System Error: Password confirmation does not match." <<endl;
-        return;
-    }
-    
-    addUserToList(username, password, "Customer");
-    saveUsersToFile();
-    cout <<"System: Customer account registered successfully." << endl;
-}
-
 bool authenticateUser(string inputUser, string inputPass, string expectedRole) {
     User* temp = userHead;
     while (temp != NULL) {
@@ -330,46 +323,76 @@ bool authenticateUser(string inputUser, string inputPass, string expectedRole) {
     return false; 
 }
 
-// Linked list and sorting functions
+
+// Linked List Sorting & Searching Engine 
+
 ProductLinkedList::ProductLinkedList() { head = NULL; count = 0; }
 ProductLinkedList::~ProductLinkedList() { clearAll(); }
-	void ProductLinkedList::clearAll() {
-	    Product* curr = head;
-	    while (curr != NULL) {
-	        Product* nextNode = curr->next;
-	        delete curr;
-	        curr = nextNode;
-	    }
-	    head = NULL; count = 0;
+void ProductLinkedList::clearAll() {
+    Product* curr = head;
+    while (curr != NULL) {
+        Product* nextNode = curr->next;
+        delete curr;
+        curr = nextNode;
+    }
+    head = NULL; count = 0;
 }
 
-void ProductLinkedList::Merge(Product** arr, int lpos, int rpos, int rend, int sortBy) {
-    int lend = rpos - 1; int tmppos = 0; int numelements = rend - lpos + 1;
-    Product** TmpArray = new Product*[numelements];
-    int l_cursor = lpos; int r_cursor = rpos;
+Product* mergeLinkedLists(Product* first, Product* second, int sortBy) {
+    if (!first) return second;
+    if (!second) return first;
 
-    while (l_cursor <= lend && r_cursor <= rend) {
-        bool condition = false;
-        if (sortBy == 1) condition = arr[l_cursor]->stockQuantity <= arr[r_cursor]->stockQuantity;
-        else if (sortBy == 2) condition = arr[l_cursor]->productPrice <= arr[r_cursor]->productPrice;
-        else condition = arr[l_cursor]->productId <= arr[r_cursor]->productId;
+    bool condition = false;
+    if (sortBy == 1) condition = first->stockQuantity <= second->stockQuantity;
+    else if (sortBy == 2) condition = first->productPrice <= second->productPrice;
+    else condition = first->productId <= second->productId;
 
-        if (condition) TmpArray[tmppos++] = arr[l_cursor++];
-        else TmpArray[tmppos++] = arr[r_cursor++];
+    Product* result = nullptr;
+    if (condition) {
+        result = first;
+        result->next = mergeLinkedLists(first->next, second, sortBy);
+    } else {
+        result = second;
+        result->next = mergeLinkedLists(first, second->next, sortBy);
     }
-    while (l_cursor <= lend) TmpArray[tmppos++] = arr[l_cursor++];
-    while (r_cursor <= rend) TmpArray[tmppos++] = arr[r_cursor++];
-    for (int i = 0; i < numelements; i++) arr[rend - i] = TmpArray[numelements - 1 - i];
-    delete[] TmpArray;
+    return result;
 }
 
-void ProductLinkedList::MergeSortRec(Product** arr, int left, int right, int sortBy) {
-    if (left < right) {
-        int center = (left + right) / 2;
-        MergeSortRec(arr, left, center, sortBy);
-        MergeSortRec(arr, center + 1, right, sortBy);
-        Merge(arr, left, center + 1, right, sortBy);
+void splitLinkedList(Product* source, Product** frontRef, Product** backRef) {
+    Product* fast;
+    Product* slow;
+    slow = source;
+    fast = source->next;
+
+    while (fast != nullptr) {
+        fast = fast->next;
+        if (fast != nullptr) {
+            slow = slow->next;
+            fast = fast->next;
+        }
     }
+    *frontRef = source;
+    *backRef = slow->next;
+    slow->next = nullptr;
+}
+
+void mergeSortLinkedList(Product** headRef, int sortBy) {
+    Product* head = *headRef;
+    if (!head || !head->next) return;
+
+    Product* a;
+    Product* b;
+    splitLinkedList(head, &a, &b);
+
+    mergeSortLinkedList(&a, sortBy);
+    mergeSortLinkedList(&b, sortBy);
+
+    *headRef = mergeLinkedLists(a, b, sortBy);
+}
+
+void ProductLinkedList::sortList(int sortBy) {
+    if (count <= 1) return;
+    mergeSortLinkedList(&head, sortBy);
 }
 
 void ProductLinkedList::insertNode(int id, string name, string cat, int qty, string z, string sup, double price) {
@@ -397,60 +420,197 @@ void ProductLinkedList::deleteNode(int id) {
     }
 }
 
-void ProductLinkedList::sortList(int sortBy) {
-    if (count <= 1) return;
-    Product** TmpArray = new Product*[count];
-    Product* curr = head; int i = 0;
-    while (curr != NULL) { TmpArray[i++] = curr; curr = curr->next; }
-    MergeSortRec(TmpArray, 0, count - 1, sortBy);
-    head = TmpArray[0]; curr = head; 
-    for (i = 1; i < count; i++) { curr->next = TmpArray[i]; curr = curr->next; }
-    curr->next = NULL;
-    delete[] TmpArray;
+Product* getMiddleNode(Product* start, Product* end) {
+    if (start == nullptr) return nullptr;
+    Product* slow = start;
+    Product* fast = start->next;
+
+    while (fast != end) {
+        fast = fast->next;
+        if (fast != end) {
+            slow = slow->next;
+            fast = fast->next;
+        }
+    }
+    return slow;
 }
 
 Product* ProductLinkedList::binarySearch(int targetId) {
-    if (count == 0) return NULL;
-    sortList(0);
-    Product** TmpArray = new Product*[count];
-    Product* curr = head; int i = 0;
-    while (curr != NULL) { TmpArray[i++] = curr; curr = curr->next; }
-    int first = 0; int last = count - 1; int mid; Product* found = NULL;
-    while (first <= last) {
-        mid = (first + last) / 2;
-        if (TmpArray[mid]->productId == targetId) { found = TmpArray[mid]; break; }
-        else if (TmpArray[mid]->productId > targetId) last = mid - 1;
-        else first = mid + 1;
+    if (count == 0) return nullptr;
+    sortList(0); // Find by ID sorting
+
+    Product* start = head;
+    Product* end = nullptr;
+
+    while (start != end) {
+        Product* mid = getMiddleNode(start, end);
+        if (mid == nullptr) return nullptr;
+
+        if (mid->productId == targetId) return mid;
+        else if (mid->productId > targetId) end = mid;
+        else start = mid->next;
     }
-    delete[] TmpArray;
-    return found;
+    return nullptr;
 }
 
 void ProductLinkedList::display() {
     Product* temp = head;
+    if(!temp) { cout << "[System Info] Inventory is completely empty." << endl; return;}
     while (temp != NULL) {
         cout << "[ID: " << temp->productId << " | Name: " << temp->productName 
-             << " | Qty: " << temp->stockQuantity << " | Price: RM" << temp->productPrice << "]\n";
+             << " | Cat: " << temp->category << " | Qty: " << temp->stockQuantity 
+             << " | Zone: " << temp->zone << " | Supplier: " << temp->supplier 
+             << " | Price: RM" << temp->productPrice << "]\n";
         temp = temp->next;
     }
 }
 
-// Menu functions
-class Admin : public UserClass {
-	public:
-	    Admin(string un) : UserClass(un, "", "Admin") {}
-	    
-	    void displayMenu() override {
-	        cout << "\n--- Admin Dashboard ---" << endl;
-	        cout << "[INFO] Admin menu functions are currently under construction by Member 2." << endl;
-	        cout << "1. Temp View Current Inventory\n2. Logout\nSelect: ";
-	        int c = getSafeInput();
-	        if (c == 1) {
-	            inventory.display();
-	        }
-	    }
+
+// ROLE CLASSES IMPLEMENTATION
+// Admin Implementation
+class AdminMenu : public UserClass {
+public:
+    AdminMenu(string un, string pw) : UserClass(un, pw, "Admin") {}
+    
+    void addProduct(ProductLinkedList& inv) {
+        int id, qty; string name, cat, zone, supplier; double price;
+        cout << "\n--- Add Product ---" << endl;
+        cout << "ID: "; id = getSafeInput();
+        cout << "Name: "; cin >> name;
+        cout << "Category: "; cin >> cat;
+        cout << "Quantity: "; qty = getSafeInput();
+        cout << "Zone: "; cin >> zone;
+        cout << "Supplier: "; cin >> supplier;
+        cout << "Price: RM "; cin >> price;
+
+        inv.insertNode(id, name, cat, qty, zone, supplier, price);
+        cout << "[Success] Product added to linked list!" << endl;
+        saveInventoryToFile(inv);
+    }
+
+    void updateStock(ProductLinkedList& inv) {
+        int id, newQty;
+        cout << "\n--- Update Stock ---" << endl;
+        cout << "Enter Product ID: "; id = getSafeInput();
+
+        Product* p = inv.binarySearch(id);
+        if (p != NULL) { 
+            cout << "[Found] " << p->productName << " | Current Qty: " << p->stockQuantity << endl;
+            cout << "Enter New Qty: "; newQty = getSafeInput(); 
+            p->stockQuantity = newQty; 
+            cout << "[Success] Stock updated!" << endl;
+            saveInventoryToFile(inv);
+        } else {
+            cout << "[Error] Product not found." << endl;
+        }
+    }
+
+    void sortAndDisplay(ProductLinkedList& inv) {
+        int s; 
+        cout << "\n--- Sort Inventory ---" << endl;
+        cout << "Sort by (1:Qty, 2:Price): "; s = getSafeInput();
+        if (s == 1 || s == 2) {
+            inv.sortList(s); 
+            inv.display();
+        } else {
+            cout << "[Error] Invalid sorting option." << endl;
+        }
+    }
+
+    void searchProduct(ProductLinkedList& inv) {
+        int id; 
+        cout << "\n--- Search Product ---" << endl;
+        cout << "Enter Product ID: "; id = getSafeInput();
+
+        Product* p = inv.binarySearch(id);
+        if (p != NULL) { 
+            cout << "\n[Found] ID: " << p->productId << " | Name: " << p->productName << endl;
+            cout << "Category: " << p->category << " | Qty: " << p->stockQuantity << endl;
+            cout << "Zone: " << p->zone << " | Supplier: " << p->supplier << endl;
+            cout << "Price: RM " << p->productPrice << endl;
+        } else {
+            cout << "[Error] Product ID " << id << " not found." << endl;
+        }
+    }
+
+    void displayMenu() override {
+        int choice;
+        bool inMenu = true;
+        while (inMenu) {
+            cout << "\n=== Admin Control Panel | User: " << username << " ===" << endl;
+            cout << "1. View Inventory\n2. Sort Inventory (Merge Sort)\n3. Search Product (Binary Search)\n4. Add Product\n5. Update Stock\n6. Logout\nChoice: ";
+            choice = getSafeInput();
+
+            if (choice == 1) inventory.display();
+            else if (choice == 2) sortAndDisplay(inventory);
+            else if (choice == 3) searchProduct(inventory);
+            else if (choice == 4) addProduct(inventory);
+            else if (choice == 5) updateStock(inventory);
+            else if (choice == 6) inMenu = false;
+            else cout << "[Error] Invalid option." << endl;
+        }
+    }
 };
 
+// SuperAdmin Implementation
+class SuperAdminMenu : public UserClass {
+public:
+    SuperAdminMenu(string un, string pw) : UserClass(un, pw, "SuperAdmin") {}
+
+    void deleteProduct(ProductLinkedList& inv) {
+	        int id; 
+	        cout << "\n--- Delete Product ---" << endl;
+	        cout << "Enter Product ID to delete: "; id = getSafeInput();
+
+        Product* p = inv.binarySearch(id);
+	        if (p != NULL) {
+	            inv.deleteNode(id);
+	            cout << "[Success] Product deleted." << endl;
+	            saveInventoryToFile(inv);
+	        } else {
+	            cout << "[Error] Product ID not found." << endl;
+	        }
+    }
+
+    void addAdmin() {
+        string un, pw; 
+        cout << "\n--- Register New Admin ---" << endl;
+        cout << "New Username: "; cin >> un; 
+        cout << "New Password: "; cin >> pw;
+	
+	        if (isUsernameExist(un)) {
+	            cout << "[Error] Username already exists!" << endl;
+	            return;
+	        }
+        addUserToList(un, pw, "Admin");
+        cout << "[Success] New admin added to system." << endl;
+        saveUsersToFile();
+    }
+
+    void displayMenu() override {
+        int choice;
+        bool inMenu = true;
+        AdminMenu tempProxy(username, password);
+        while (inMenu) {
+            cout << "\n=== [MASTER] SuperAdmin Panel | User: " << username << " ===" << endl;
+            cout << "1. View Inventory\n2. Sort Inventory\n3. Search Product\n4. Add Product\n5. Update Stock\n";
+            cout << "6. Delete Product [High Privilege]\n7. Add Admin [High Privilege]\n8. Logout\nChoice: ";
+            choice = getSafeInput();
+
+            if (choice == 1) inventory.display();
+            else if (choice == 2) tempProxy.sortAndDisplay(inventory);
+            else if (choice == 3) tempProxy.searchProduct(inventory);
+            else if (choice == 4) tempProxy.addProduct(inventory);
+            else if (choice == 5) tempProxy.updateStock(inventory);
+            else if (choice == 6) deleteProduct(inventory);
+            else if (choice == 7) addAdmin();
+            else if (choice == 8) inMenu = false;
+            else cout << "[Error] Invalid option." << endl;
+        }
+    }
+};
+
+// Customer Implementation
 class Customer : public UserClass {
 	private:
 	    Order* head; Order* tail;
@@ -502,7 +662,7 @@ void Customer::addOrder() {
     cout << "Enter Order Date (YYYY-MM-DD): "; 
     string rawDate;
     cin >> rawDate;
-    newOrder->orderDate = cleanString(rawDate); // clean user input
+    newOrder->orderDate = cleanString(rawDate); 
     
     newOrder->operatorName = this->username; newOrder->next = nullptr;
     
@@ -543,7 +703,29 @@ void Customer::displayMenu() {
     }
 }
 
-// Clear Memory (main.cpp)
+void registerCustomer(){
+    string username, password, confirmPassword;
+    cout <<"\n~+~Customer Registration~+~" <<endl;
+    cout <<"Enter username: "; cin >> username;
+    
+    if (isUsernameExist(username)){
+        cout <<"System Error: Username already exists. Please try another username." << endl;
+        return;
+    }
+    cout << "Enter password: "; cin >> password;
+    cout << "Confirm password: "; cin >> confirmPassword;
+    
+    if (password != confirmPassword){
+        cout << "System Error: Password confirmation does not match." <<endl;
+        return;
+    }
+    
+    addUserToList(username, password, "Customer");
+    saveUsersToFile();
+    cout <<"System: Customer account registered successfully." << endl;
+}
+
+// Clear Memory
 void clearMemory(){
     inventory.clearAll(); 
 
@@ -563,7 +745,8 @@ void clearMemory(){
     cout <<"System: Memory cleared safely." << endl;
 }
 
-// // Main function
+// Main Gateway
+
 int main() {
     cout <<"==========================================="<<endl;
     cout <<"         Warehouse Inventory System        "<<endl;
@@ -580,48 +763,51 @@ int main() {
         cout <<"\n~+~ Main Gateway ~+~"<<endl;
         cout <<"\n>>> Login Menu <<<" <<endl;
         cout << "1. Login as Admin " <<endl;
-        cout << "2. Login as Customer "<<endl;
-        cout << "3. Register as Customer" <<endl;
-        cout << "4. Exit System" <<endl;
+        cout << "2. Login as SuperAdmin "<<endl;
+        cout << "3. Login as Customer "<<endl;
+        cout << "4. Register as Customer" <<endl;
+        cout << "5. Exit System" <<endl;
         cout << "Select your role: ";
         
         int choice = getSafeInput();
-        
-        // clear buffer before getting user input
         if (cin.peek() == '\n') cin.ignore(); 
 
         switch (choice) {
             case 1: {
                 cout << "\n--- Admin Login ---" << endl;
-                cout << "Username: "; 
-                getline(cin, inputUser); // getline
-                inputUser = cleanString(inputUser);
-
-                cout << "Password: "; 
-                getline(cin, inputPass);
-                inputPass = cleanString(inputPass);
+                cout << "Username: "; getline(cin, inputUser); inputUser = cleanString(inputUser);
+                cout << "Password: "; getline(cin, inputPass); inputPass = cleanString(inputPass);
 
                 if (authenticateUser(inputUser, inputPass, "Admin")) {
                     cout << "\nAccess Granted. Welcome, Admin " << inputUser << "!" << endl;
-                    Admin adminObj(inputUser);
+                    AdminMenu adminObj(inputUser, inputPass);
                     adminObj.displayMenu(); 
                 } else {
-                    cout << "\nAccess Denied. Incorrect username or password." << endl;
+                    cout << "\nAccess Denied. Incorrect credentials or role mismatch." << endl;
                 }
                 break;
             }
             case 2: {
-                cout << "\n--- Customer Login ---" << endl;
-                cout << "Username: "; 
-                getline(cin, inputUser); // getline
-                inputUser = cleanString(inputUser);
+                cout << "\n--- SuperAdmin Login ---" << endl;
+                cout << "Username: "; getline(cin, inputUser); inputUser = cleanString(inputUser);
+                cout << "Password: "; getline(cin, inputPass); inputPass = cleanString(inputPass);
 
-                cout << "Password: "; 
-                getline(cin, inputPass);
-                inputPass = cleanString(inputPass);
+                if (authenticateUser(inputUser, inputPass, "SuperAdmin")) {
+                    cout << "\n[SUCCESS] Access Granted. Welcome, " << inputUser << "!" << endl;
+                    SuperAdminMenu superObj(inputUser, inputPass);
+                    superObj.displayMenu(); 
+                } else {
+                    cout << "\nAccess Denied. Incorrect credentials or role mismatch." << endl;
+                }
+                break;
+            }
+            case 3: {
+                cout << "\n--- Customer Login ---" << endl;
+                cout << "Username: "; getline(cin, inputUser); inputUser = cleanString(inputUser);
+                cout << "Password: "; getline(cin, inputPass); inputPass = cleanString(inputPass);
 
                 if (authenticateUser(inputUser, inputPass, "Customer")) {
-                    cout << "\nAccess Granted. Welcome, Customer " << inputUser << "!" << endl;
+                    cout << "\nAccess Granted. Welcome, " << inputUser << "!" << endl;
                     Customer customerObj(inputUser, inputPass);
                     customerObj.displayMenu();
                 } else {
@@ -629,11 +815,11 @@ int main() {
                 }
                 break;
             }
-            case 3:{
+            case 4:{
                 registerCustomer();
                 break;
             }
-            case 4: {
+            case 5: {
                 cout << "\nSystem: Preparing to shutdown..." << endl;
                 isRunning = false;
                 break;
@@ -643,7 +829,7 @@ int main() {
         }
     }
 
-    saveDataToFile();
+    saveInventoryToFile(inventory);
     saveOrdersToFile();
     saveUsersToFile();
     clearMemory();

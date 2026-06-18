@@ -1,4 +1,5 @@
 admin|admin123|Admin
+superadmin|super123|SuperAdmin
 CYY|123|Customer
 CINDY|456|Customer
 LEE|789|Customer
@@ -6,3 +7,5 @@ TUNG|122|Customer
 CHUA|555|Customer
 CHOI|987|Customer
 NG|666|Customer
+TEST1|abc123|Customer
+TEST_ADMIN|abc123|Admin

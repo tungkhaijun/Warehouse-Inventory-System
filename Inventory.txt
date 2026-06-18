@@ -47,4 +47,4 @@
 147|aaa_battery_4pack|Groceries|220|Zone_I|Unknown_Vendor|6.5
 148|panadol_actifast_20s|Groceries|100|Zone_I|Pharmacy_Supplier|11
 149|trash_bag_black|Groceries|350|Zone_I|Plastic_Factory|4.5
-150|abc_aa_battery_test|Groceries|999|Zone_I|Dummy_Vendor|0.99
+150|abc_aa_battery|Electronic|140|Zone_C|MMM_Shop|23
