@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "backend.h"
+#include "structures.h"
 using namespace std;
 
 // ==========================================

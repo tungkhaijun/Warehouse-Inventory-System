@@ -4,9 +4,10 @@
 
 #include <iostream>
 #include <string>
+
 using namespace std;
 
-//for the product data
+
 struct Product {
     int productId;
     string productName;
@@ -19,7 +20,6 @@ struct Product {
     Product* next;
 };
 
-//for the order data
 struct Order {
     int orderId;
     int productId;
@@ -30,13 +30,31 @@ struct Order {
     Order* next;
 };
 
-//for the user's data
-struct User {
+class User {
+public:
     string username;
     string password; 
-    string role; // User,Admin,Manager
-    
+    string role; 
     User* next; 
+
+    User(string un = "", string pw = "", string r = "") 
+        : username(un), password(pw), role(r), next(NULL) {}
+    virtual ~User() {} 
+    virtual void displayMenu() { cout << "--- Generic User Menu ---" << endl; } 
+};
+
+class Admin : public User {
+public:
+    Admin(string un);
+    ~Admin();
+    void displayMenu() override;
+};
+
+class Manager : public User {
+public:
+    Manager(string un);
+    ~Manager();
+    void displayMenu() override;
 };
 
 #endif

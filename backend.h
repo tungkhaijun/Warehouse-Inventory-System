@@ -3,57 +3,10 @@
 
 #include <iostream>
 #include <string>
+#include "structures.h"
 
 using namespace std;
 
-struct Product {
-    int productId;
-    string productName;
-    string category;
-    int stockQuantity;
-    string zone;
-    string supplier;
-    double productPrice;
-    
-    Product* next;
-};
-
-struct Order {
-    int orderId;
-    int productId;
-    int dispatchQuantity;
-    string operatorName;
-    string orderDate;
-    
-    Order* next;
-};
-
-class User {
-protected:
-    string username;
-    string password; 
-    string role; // User,Admin,Manager
-    
-    User* next; 
-public:
-    User(string un, string pw, string r);
-    virtual ~User(); 
-    virtual void displayMenu() = 0; 
-};
-
-class Admin : public User {
-public:
-    Admin(string un);
-    ~Admin();
-    void displayMenu() override;
-};
-
-class Manager : public User {
-public:
-    Manager(string un);
-    ~Manager();
-    void displayMenu() override;
-};
 
 class ProductLinkedList {
 private:
