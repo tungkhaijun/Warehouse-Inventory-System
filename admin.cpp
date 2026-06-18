@@ -19,16 +19,17 @@ extern User* userHead;
 // =========================================================
 
 void saveInventoryToFile(ProductLinkedList& inventory) {
-    // Make sure the path matches your main.cpp design (e.g., "data/Inventory.txt" or just "Inventory.txt")
-    // I am using "Inventory.txt" to match your uploaded text file location.
-    ofstream outFile("Inventory.txt"); 
+    // ios::out | ios::trunc = overwrite entire file with ALL nodes in the linked list.
+    // This is CORRECT because we always write the full linked list back to disk.
+    // Old data is preserved as long as loadInventoryFromFile() was called at startup
+    // so the linked list already contains all existing products before we add new ones.
+    ofstream outFile("Inventory.txt", ios::out | ios::trunc);
     if (!outFile) {
         cout << "[System Warning] Cannot write to Inventory.txt!" << endl;
         return;
     }
     Product* temp = inventory.getHead();
     while (temp != NULL) {
-        // Changed from spaces " " to pipes "|" to match your format
         outFile << temp->productId << "|" 
                 << temp->productName << "|" 
                 << temp->category << "|" 
@@ -42,15 +43,16 @@ void saveInventoryToFile(ProductLinkedList& inventory) {
 }
 
 void saveAdminsToFile() {
-    ofstream outFile("data/Admin.txt");
+    // Write using '|' delimiter to match Admin.txt format: username|password|role
+    ofstream outFile("Admin.txt", ios::out | ios::trunc);
     if (!outFile) {
-        cout << "[System Warning] Cannot write to data/Admin.txt! Ensure 'data' folder exists." << endl;
+        cout << "[System Warning] Cannot write to Admin.txt!" << endl;
         return;
     }
     User* temp = userHead;
     while (temp != NULL) {
-        outFile << temp->username << " " 
-                << temp->password << " " 
+        outFile << temp->username << "|" 
+                << temp->password << "|" 
                 << temp->role << "\n";
         temp = temp->next;
     }
@@ -93,11 +95,20 @@ void loadInventoryFromFile(ProductLinkedList& inventory) {
 }
 
 void loadAdminsFromFile() {
-    ifstream inFile("data/Admin.txt");
+    ifstream inFile("Admin.txt");
     if (!inFile) return; 
 
-    string un, pw, role;
-    while (inFile >> un >> pw >> role) {
+    string line;
+    // Admin.txt format uses '|' as delimiter: username|password|role
+    while (getline(inFile, line)) {
+        if (line.empty()) continue;
+
+        stringstream ss(line);
+        string un, pw, role;
+        getline(ss, un,   '|');
+        getline(ss, pw,   '|');
+        getline(ss, role, '|');
+
         User* n = NULL;
         if (role == "SuperAdmin") n = new SuperAdmin(un, pw);
         else if (role == "Admin") n = new Admin(un, pw);
@@ -306,5 +317,5 @@ void SuperAdmin::addAdmin() {
     cout << "[Success] New admin added to system." << endl;
     
     saveAdminsToFile();
-    cout << "[System] data/Admin.txt auto-saved." << endl;
+    cout << "[System] Admin.txt auto-saved." << endl;
 }
