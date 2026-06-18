@@ -9,3 +9,4 @@ CHOI|987|Customer
 NG|666|Customer
 TEST1|abc123|Customer
 TEST_ADMIN|abc123|Admin
+NG|666|Customer

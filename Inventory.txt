@@ -19,7 +19,7 @@
 119|led_desk_lamp|Furniture|90|Zone_D|Philips_Shop|45
 120|wooden_shelf_3tier|Furniture|15|Zone_D|IKEA_Damansara|85
 121|logitech_g502_mouse|Electronics|40|Zone_E|Logitech_Dist|249
-122|razer_keyboard_rgb|Electronics|25|Zone_E|Razer_Asia|350
+122|razer_keyboard_rgb|Electronics|21|Zone_E|Razer_Asia|350
 123|asus_monitor_24inch|Electronics|15|Zone_E|Asus_Malaysia|499
 124|powerbank_20000mah|Electronics|120|Zone_E|Anker_Store|109
 125|sony_wh1000xm4|Electronics|8|Zone_E|Sony_HQ|1199
@@ -47,4 +47,4 @@
 147|aaa_battery_4pack|Groceries|220|Zone_I|Unknown_Vendor|6.5
 148|panadol_actifast_20s|Groceries|100|Zone_I|Pharmacy_Supplier|11
 149|trash_bag_black|Groceries|350|Zone_I|Plastic_Factory|4.5
-150|abc_aa_battery|Electronic|140|Zone_C|MMM_Shop|23
+150|abc_aa_battery|Electronic|200|Zone_C|MMY_Store|25

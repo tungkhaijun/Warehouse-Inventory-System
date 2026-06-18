@@ -45,7 +45,7 @@ struct Order {
 struct User {
     string username;
     string password; 
-    string role; // User, Admin, SuperAdmin, Customer
+    string role; // Admin, SuperAdmin, Customer
     
     User* next; 
 };
@@ -82,14 +82,12 @@ public:
     void clearAll(); 
 };
 
-// Global variables
-
+// Global variables (To match extern statements in backend/admin systems)
 ProductLinkedList inventory; 
 Order* orderHead = nullptr;  
 User* userHead = nullptr;    
 
 // File handling safety check
-
 int getSafeInput(){
     int input;
     while (true){
@@ -112,7 +110,9 @@ int getSafeInput(){
     }
 }
 
-// File I/O Engine 
+// =========================================================
+// File I/O Engine (Aligned flawlessly with admin.cpp specs)
+// =========================================================
 
 void saveInventoryToFile(ProductLinkedList& inv) {
     ofstream outFile("Inventory.txt", ios::trunc); 
@@ -152,6 +152,22 @@ void saveUsersToFile() {
     cout << "[System] Admin.txt auto-saved." << endl;
 }
 
+void saveOrdersToFile(){
+    ofstream outFile("Orders.txt", ios::trunc);
+    if(!outFile){
+        cout << "System Error: Could not open Orders.txt to save data." << endl;
+        return;
+    }
+    Order* temp = orderHead;
+    while (temp != NULL){
+        outFile << temp->orderId << "|" << temp->productId << "|" << temp->dispatchQuantity << "|"
+                << temp->operatorName << "|" << temp->orderDate << "\n";
+        temp = temp->next;        
+    }
+    outFile.close();
+    cout << "System: Order data successfully saved to file." << endl;
+}
+
 void loadDataFromFile(){
     ifstream inFile("Inventory.txt");
     if (!inFile){
@@ -160,6 +176,7 @@ void loadDataFromFile(){
     }
     
     string line;
+    // Safe sequential read to avoid duplicate bottom lines
     while (getline(inFile, line)) {
         if (line.empty()) continue;
         stringstream ss(line);
@@ -187,33 +204,38 @@ void loadUsersFromFile(){
         return;
     }
     
-    string user, pass, role;
-    while (getline(inFile, user, '|')) {
-        getline(inFile, pass, '|');
-        getline(inFile, role); 
+    string line;
+    while (getline(inFile, line)) {
+        if (line.empty()) continue;
+        stringstream ss(line);
+        string user, pass, role;
 
-        user = cleanString(user);
-        pass = cleanString(pass);
-        role = cleanString(role);
+        if (getline(ss, user, '|') && getline(ss, pass, '|')) {
+            getline(ss, role);
+            
+            user = cleanString(user);
+            pass = cleanString(pass);
+            role = cleanString(role);
 
-        if(user.empty()) continue;
+            if(user.empty()) continue;
 
-        User* newNode = new User;
-        newNode->username = user;
-        newNode->password = pass;
-        newNode->role = role;
-        newNode->next = NULL;
+            User* newNode = new User;
+            newNode->username = user;
+            newNode->password = pass;
+            newNode->role = role;
+            newNode->next = NULL;
 
-        if (userHead == NULL) {
-            userHead = newNode;
-        } else {
-            User* temp = userHead;
-            while (temp->next != NULL) { temp = temp->next; }
-            temp->next = newNode;
+            if (userHead == NULL) {
+                userHead = newNode;
+            } else {
+                User* temp = userHead;
+                while (temp->next != NULL) { temp = temp->next; }
+                temp->next = newNode;
+            }
         }
-     }
-     inFile.close();
-     cout << "System: User credentials loaded successfully." << endl;  
+    }
+    inFile.close();
+    cout << "System: User credentials loaded successfully." << endl;  
 }
 
 void loadOrdersFromFile(){
@@ -253,30 +275,13 @@ void loadOrdersFromFile(){
     cout << "System: Order data loaded successfully." << endl;
 }
 
-void saveOrdersToFile(){
-    ofstream outFile("Orders.txt", ios::trunc);
-    if(!outFile){
-        cout << "System Error: Could not open Orders.txt to save data." << endl;
-        return;
-    }
-    
-    Order* temp = orderHead;
-    while (temp != NULL){
-        outFile << temp->orderId << "|" << temp->productId << "|" << temp->dispatchQuantity << "|"
-                << temp->operatorName << "|" << temp->orderDate << "\n";
-        temp = temp->next;        
-    }
-    outFile.close();
-    cout << "System: Order data successfully saved to file." << endl;
-}
-
 void checkSupportFile(const char* fileName){
     ifstream inFile(fileName);
-    if (!inFile){
+    if (!inFile) {
         ofstream createFile(fileName);
         createFile.close();
         cout <<"System Warning: " << fileName << " not found. Empty file created. " << endl;
-    }else{
+    } else {
         inFile.close();
         cout <<"System: " << fileName << " is ready."<< endl;
     }
@@ -298,8 +303,8 @@ bool isUsernameExist(string username){
 
 void addUserToList(string username, string password, string role){
     User* newNode = new User;
-    newNode->username= username;
-    newNode->password= password;
+    newNode->username = username;
+    newNode->password = password;
     newNode->role = role;
     newNode->next = NULL;
     
@@ -323,8 +328,9 @@ bool authenticateUser(string inputUser, string inputPass, string expectedRole) {
     return false; 
 }
 
-
+// =========================================================
 // Linked List Sorting & Searching Engine 
+// =========================================================
 
 ProductLinkedList::ProductLinkedList() { head = NULL; count = 0; }
 ProductLinkedList::~ProductLinkedList() { clearAll(); }
@@ -437,7 +443,7 @@ Product* getMiddleNode(Product* start, Product* end) {
 
 Product* ProductLinkedList::binarySearch(int targetId) {
     if (count == 0) return nullptr;
-    sortList(0); // Find by ID sorting
+    sortList(0); // Ensure it's sorted by ID for Binary Search logic
 
     Product* start = head;
     Product* end = nullptr;
@@ -466,8 +472,10 @@ void ProductLinkedList::display() {
 }
 
 
-// ROLE CLASSES IMPLEMENTATION
-// Admin Implementation
+// =========================================================
+// ROLE CLASSES IMPLEMENTATION (Admin Specs Compliant)
+// =========================================================
+
 class AdminMenu : public UserClass {
 public:
     AdminMenu(string un, string pw) : UserClass(un, pw, "Admin") {}
@@ -485,7 +493,7 @@ public:
 
         inv.insertNode(id, name, cat, qty, zone, supplier, price);
         cout << "[Success] Product added to linked list!" << endl;
-        saveInventoryToFile(inv);
+        saveInventoryToFile(inv); // Dynamic saving
     }
 
     void updateStock(ProductLinkedList& inv) {
@@ -552,24 +560,23 @@ public:
     }
 };
 
-// SuperAdmin Implementation
 class SuperAdminMenu : public UserClass {
 public:
     SuperAdminMenu(string un, string pw) : UserClass(un, pw, "SuperAdmin") {}
 
     void deleteProduct(ProductLinkedList& inv) {
-	        int id; 
-	        cout << "\n--- Delete Product ---" << endl;
-	        cout << "Enter Product ID to delete: "; id = getSafeInput();
+        int id; 
+        cout << "\n--- Delete Product ---" << endl;
+        cout << "Enter Product ID to delete: "; id = getSafeInput();
 
         Product* p = inv.binarySearch(id);
-	        if (p != NULL) {
-	            inv.deleteNode(id);
-	            cout << "[Success] Product deleted." << endl;
-	            saveInventoryToFile(inv);
-	        } else {
-	            cout << "[Error] Product ID not found." << endl;
-	        }
+        if (p != NULL) {
+            inv.deleteNode(id);
+            cout << "[Success] Product deleted." << endl;
+            saveInventoryToFile(inv);
+        } else {
+            cout << "[Error] Product ID not found." << endl;
+        }
     }
 
     void addAdmin() {
@@ -577,11 +584,11 @@ public:
         cout << "\n--- Register New Admin ---" << endl;
         cout << "New Username: "; cin >> un; 
         cout << "New Password: "; cin >> pw;
-	
-	        if (isUsernameExist(un)) {
-	            cout << "[Error] Username already exists!" << endl;
-	            return;
-	        }
+    
+        if (isUsernameExist(un)) {
+            cout << "[Error] Username already exists!" << endl;
+            return;
+        }
         addUserToList(un, pw, "Admin");
         cout << "[Success] New admin added to system." << endl;
         saveUsersToFile();
@@ -590,7 +597,7 @@ public:
     void displayMenu() override {
         int choice;
         bool inMenu = true;
-        AdminMenu tempProxy(username, password);
+        AdminMenu tempProxy(username, password); // Proxy Design pattern reuse
         while (inMenu) {
             cout << "\n=== [MASTER] SuperAdmin Panel | User: " << username << " ===" << endl;
             cout << "1. View Inventory\n2. Sort Inventory\n3. Search Product\n4. Add Product\n5. Update Stock\n";
@@ -612,29 +619,41 @@ public:
 
 // Customer Implementation
 class Customer : public UserClass {
-	private:
-	    Order* head; Order* tail;
-	public:
-	    Customer(string un, string pw) : UserClass(un, pw, "Customer"), head(nullptr), tail(nullptr) {}
-	    ~Customer();
-	    void displayMenu() override;
-	    void addOrder(); void displayOrders(); void syncFromGlobalList();
-	};
+private:
+    Order* head; 
+    Order* tail;
+public:
+    Customer(string un, string pw) : UserClass(un, pw, "Customer"), head(nullptr), tail(nullptr) {}
+    ~Customer();
+    void displayMenu() override;
+    void addOrder(); 
+    void displayOrders(); 
+    void syncFromGlobalList();
+};
 
 Customer::~Customer() {
     Order* current = head;
-    while (current != nullptr) { Order* temp = current; current = current->next; delete temp; }
+    while (current != nullptr) { 
+        Order* temp = current; 
+        current = current->next; 
+        delete temp; 
+    }
 }
 
 void Customer::syncFromGlobalList() {
     Order* curr = head;
-    while (curr != nullptr) { Order* t = curr; curr = curr->next; delete t; }
+    while (curr != nullptr) { 
+        Order* t = curr; 
+        curr = curr->next; 
+        delete t; 
+    }
     head = nullptr; tail = nullptr;
 
     Order* current = orderHead;
     while (current != nullptr) {
         if (current->operatorName == this->username) { 
-            Order* newOrder = new Order(*current); newOrder->next = nullptr;
+            Order* newOrder = new Order(*current); 
+            newOrder->next = nullptr;
             if (head == nullptr) { head = newOrder; tail = newOrder; }
             else { tail->next = newOrder; tail = newOrder; }
         }
@@ -664,11 +683,14 @@ void Customer::addOrder() {
     cin >> rawDate;
     newOrder->orderDate = cleanString(rawDate); 
     
-    newOrder->operatorName = this->username; newOrder->next = nullptr;
+    newOrder->operatorName = this->username; 
+    newOrder->next = nullptr;
     
+    // 1. Link into local context
     if (head == nullptr) { head = newOrder; tail = newOrder; }
     else { tail->next = newOrder; tail = newOrder; }
     
+    // 2. Link into global database log context
     Order* globalNode = new Order(*newOrder);
     if (orderHead == nullptr) { orderHead = globalNode; }
     else {
@@ -676,7 +698,13 @@ void Customer::addOrder() {
         while (t->next != nullptr) t = t->next;
         t->next = globalNode;
     }
-    cout << "\n[SUCCESS] Order created successfully!\n";
+
+    // 3. Deduct actual warehouse stocks instantly & write directly to disk files
+    checkProd->stockQuantity -= newOrder->dispatchQuantity;
+    saveInventoryToFile(inventory);
+    saveOrdersToFile(); // CRITICAL FIX: Missing instant dynamic save for operations stability!
+    
+    cout << "\n[SUCCESS] Order created successfully! Stock updated dynamically.\n";
 }
 
 void Customer::displayOrders() {
@@ -725,7 +753,7 @@ void registerCustomer(){
     cout <<"System: Customer account registered successfully." << endl;
 }
 
-// Clear Memory
+// Clear Memory Safely
 void clearMemory(){
     inventory.clearAll(); 
 
@@ -746,7 +774,6 @@ void clearMemory(){
 }
 
 // Main Gateway
-
 int main() {
     cout <<"==========================================="<<endl;
     cout <<"         Warehouse Inventory System        "<<endl;
@@ -829,6 +856,7 @@ int main() {
         }
     }
 
+    // Defensive Save Actions On Termination Gateway
     saveInventoryToFile(inventory);
     saveOrdersToFile();
     saveUsersToFile();
