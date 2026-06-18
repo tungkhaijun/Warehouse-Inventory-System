@@ -390,9 +390,23 @@ int main() {
                 cout << "Password: ";
                 cin >> inputPass;
 
-                // Verify credentials against the User linked list
+                // Verify credentials against the User linked list (Admin /SuperAdmin)
                 if (authenticateUser(inputUser, inputPass, "Admin")) {
                     cout << "\nAccess Granted. Welcome, Admin " << inputUser << "!" << endl;
+                
+					  
+	                User* currentUser = new Admin(inputUser, inputPass);
+                    currentUser->displayMenu(); 
+                    delete currentUser;
+                }
+                
+                else if (authenticateUser(inputUser, inputPass, "SuperAdmin")) {
+                    cout << "\nAccess Granted. Welcome, SuperAdmin " << inputUser << "!" << endl;  
+					
+					User* currentUser = new SuperAdmin(inputUser, inputPass);
+                    currentUser->displayMenu(); 
+                    delete currentUser; // 退出菜单后释放内存
+                }  
                     
                     // TODO: Call Member 2's admin module here
                     // Admin adminObj;

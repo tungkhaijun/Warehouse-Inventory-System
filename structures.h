@@ -30,31 +30,16 @@ struct Order {
     Order* next;
 };
 
+
 class User {
 public:
-    string username;
-    string password; 
-    string role; 
-    User* next; 
+    string username, password, role;
+    User* next;
 
-    User(string un = "", string pw = "", string r = "") 
-        : username(un), password(pw), role(r), next(NULL) {}
-    virtual ~User() {} 
-    virtual void displayMenu() { cout << "--- Generic User Menu ---" << endl; } 
-};
+    User(string un, string pw, string r) : username(un), password(pw), role(r), next(NULL) {}
+    virtual ~User() {}
 
-class Admin : public User {
-public:
-    Admin(string un);
-    ~Admin();
-    void displayMenu() override;
-};
-
-class Manager : public User {
-public:
-    Manager(string un);
-    ~Manager();
-    void displayMenu() override;
+    virtual void displayMenu() = 0; 
 };
 
 #endif

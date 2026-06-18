@@ -2,21 +2,9 @@
 #include <string>
 #include "backend.h"
 #include "structures.h"
+
 using namespace std;
 
-// ==========================================
-// 1. dynamic non-primitive data structure: user class hierarchy (Admin, Manager, Member)
-// ==========================================
-    User::User(string un, string pw, string r) : username(un), password(pw), role(r) {}
-    User::~User() {}
-
-    Admin::Admin(string un) : User(un, "", "Admin") {}
-    Admin::~Admin() {}
-    void Admin::displayMenu() { cout << "--- Admin Menu ---" << endl; }
-
-    Manager::Manager(string un) : User(un, "", "Manager") {}
-    Manager::~Manager() {}
-    void Manager::displayMenu() { cout << "--- Manager Menu ---" << endl; }
 
 // ==========================================
 // 2. linked list with merge sort and binary search
