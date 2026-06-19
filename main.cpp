@@ -13,7 +13,7 @@ Product* inventoryHead = NULL;
 Order* orderHead = NULL;
 User* userHead = NULL;
 
-//1. Safe Input(Prevent Crash using Try-Catch)
+//1. Safe Input: Make sure user enters number for menu choice
 int getSafeInput(){
 	int input;
 	while (true){
@@ -128,7 +128,7 @@ void loadUsersFromFile(){
         getline(inFile, pass, '|');
         getline(inFile, role); 
 
-        // Defensive programming: remove trailing '\r' if running on Windows
+        // Defensive programming: remove extra windows new line characters
         if (!role.empty() && role[role.length() - 1] == '\r') {
             role.erase(role.length() - 1);
         }
@@ -443,11 +443,11 @@ int main() {
                 break;
             }
             default:
-                cout << "System Error: Invalid option. Please select 1-3." << endl;
+                cout << "System Error: Invalid option. Please select 1-4." << endl;
         }
     }
 
-    // Save only inventory data upon exit (User data does not change)
+    // Save all updated data before exit
     saveDataToFile();
     saveOrdersToFile();
     saveUsersToFile();
