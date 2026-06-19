@@ -257,7 +257,7 @@ void Customer::generateReport(){
     while (current!= nullptr){
     	outFile << "Order ID: " << current->orderId
                 << " | Product ID: " << current->productId
-                << " | Category Id: " << current->categoryId << "\n";
+                << " | Category Id: " << current->categoryId << "\n"
                 << " | Quantity: " << current->dispatchQuantity
                 << " | Date: " << current->orderDate << "\n";
                 
