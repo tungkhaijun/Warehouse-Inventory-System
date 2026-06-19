@@ -70,6 +70,7 @@ void Customer::displayOrders(){
 		cout<<"Record #"<< recordcount<<"\n";
 		cout << "  Order ID : " << current->orderId << "\n";
         cout << "  Product ID : " << current->productId << "\n";
+        cout << "  Category ID: " << current->categoryId << "\n";
         cout << "  Quantity   : " << current->dispatchQuantity << "\n";
         cout << "  Order Date : " << current->orderDate << "\n";
         cout << "---------------------------------\n";
@@ -136,10 +137,11 @@ void Customer::searchOrder() {
 	if(found != nullptr){
 		cout << "\n[SUCCESS] Record Found using Binary Search!\n";
         cout << "---------------------------------\n";
-        cout << "Order ID   : " << found->orderId << "\n";
-        cout << "Product ID : " << found->productId << "\n";
-        cout << "Quantity   : " << found->dispatchQuantity << "\n";
-        cout << "Order Date : " << found->orderDate << "\n";
+        cout << "Order ID    : " << found->orderId << "\n";
+        cout << "Product ID  : " << found->productId << "\n";
+        cout << "Category ID : " << found->categoryId << "\n";
+        cout << "Quantity    : " << found->dispatchQuantity << "\n";
+        cout << "Order Date  : " << found->orderDate << "\n";
         cout << "---------------------------------\n";
 	}
 	
@@ -255,6 +257,7 @@ void Customer::generateReport(){
     while (current!= nullptr){
     	outFile << "Order ID: " << current->orderId
                 << " | Product ID: " << current->productId
+                << " | Category Id: " << current->categoryId << "\n";
                 << " | Quantity: " << current->dispatchQuantity
                 << " | Date: " << current->orderDate << "\n";
                 
