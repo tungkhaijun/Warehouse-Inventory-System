@@ -2,24 +2,13 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include <limits>
-#include <algorithm>
-#include <cctype>
 #include <cstdlib>
 
 using namespace std;
 
-// Helper function: remove unwanted characters from input
-string cleanString(string str) {
-    while (!str.empty() && (str.back() == '\r' || str.back() == '\n' || 
-                            str.back() == ' ' || isspace((unsigned char)str.back()) || 
-                            (unsigned char)str.back() == 12289 || str.back() == '?')) {
-        str.pop_back();
-    }
-    return str;
-}
-
-// CORE STRUCT DEFINITIONS
+// ========================================
+// CORE STRUCT DEFINITIONS 
+// ========================================
 struct Product {
     int productId;
     string productName;
@@ -50,7 +39,9 @@ struct User {
     User* next; 
 };
 
-// PART 2: CLASS DECLARATIONS & OOP INHERITANCE
+// ========================================
+// CLASS DECLARATIONS & OOP INHERITANCE
+// ========================================
 class UserClass {
 protected:
     string username;
@@ -59,7 +50,7 @@ protected:
 public:
     UserClass(string un, string pw, string r) : username(un), password(pw), role(r) {}
     virtual ~UserClass() {} 
-    virtual void displayMenu() = 0; 
+    virtual void displayMenu() = 0; // Pure Virtual Function for Polymorphism
     
     string getUsername() { return username; }
     string getPassword() { return password; }
@@ -79,13 +70,24 @@ public:
     Product* binarySearch(int targetId);
     void display();
     Product* getHead() { return head; }
+    int getCount() { return count; }
     void clearAll(); 
 };
 
-// Global variables (To match extern statements in backend/admin systems)
+// Global variables 
 ProductLinkedList inventory; 
 Order* orderHead = nullptr;  
 User* userHead = nullptr;    
+
+// Helper function: remove unwanted characters from input
+string cleanString(string str) {
+    while (!str.empty() && (str.back() == '\r' || str.back() == '\n' || 
+                            str.back() == ' ' || isspace((unsigned char)str.back()) || 
+                            (unsigned char)str.back() == 12289 || str.back() == '?')) {
+        str.pop_back();
+    }
+    return str;
+}
 
 // File handling safety check
 int getSafeInput(){
@@ -110,9 +112,7 @@ int getSafeInput(){
     }
 }
 
-
-// File I/O Engine (Aligned flawlessly with admin.cpp specs)
-
+// Aligned File I/O Persistence Layer
 void saveInventoryToFile(ProductLinkedList& inv) {
     ofstream outFile("Inventory.txt", ios::trunc); 
     if (!outFile) {
@@ -175,7 +175,6 @@ void loadDataFromFile(){
     }
     
     string line;
-    // Safe sequential read to avoid duplicate bottom lines
     while (getline(inFile, line)) {
         if (line.empty()) continue;
         stringstream ss(line);
@@ -199,7 +198,17 @@ void loadDataFromFile(){
 void loadUsersFromFile(){
     ifstream inFile("Admin.txt");
     if(!inFile){
-        cout << "System Error: Admin.txt not found! Login will fail." << endl;
+        cout << "System Error: Admin.txt not found! Creating a default SuperAdmin." << endl;
+        ofstream out("Admin.txt");
+        out << "admin|admin123|SuperAdmin\n";
+        out.close();
+        
+        User* newNode = new User;
+        newNode->username = "admin";
+        newNode->password = "admin123";
+        newNode->role = "SuperAdmin";
+        newNode->next = NULL;
+        userHead = newNode;
         return;
     }
     
@@ -254,9 +263,9 @@ void loadOrdersFromFile(){
             getline(ss, opName, '|')) {
             getline(ss, oDate);
             Order* newNode = new Order;
-            newNode->orderId = stoi(oId);
-            newNode->productId = stoi(pId);
-            newNode->dispatchQuantity = stoi(qty);
+            newNode->orderId = atoi(oId.c_str());
+            newNode->productId = atoi(pId.c_str());
+            newNode->dispatchQuantity = atoi(qty.c_str());
             newNode->operatorName = cleanString(opName);
             newNode->orderDate = cleanString(oDate); 
             newNode->next = NULL;
@@ -327,10 +336,12 @@ bool authenticateUser(string inputUser, string inputPass, string expectedRole) {
     return false; 
 }
 
-
-// Linked List Sorting & Searching Engine 
+// ===================================================================
+// LINKED LIST SORTING & SEARCHING ENGINE (MERGE SORT & BINARY SEARCH)
+// ===================================================================
 ProductLinkedList::ProductLinkedList() { head = NULL; count = 0; }
 ProductLinkedList::~ProductLinkedList() { clearAll(); }
+
 void ProductLinkedList::clearAll() {
     Product* curr = head;
     while (curr != NULL) {
@@ -348,7 +359,7 @@ Product* mergeLinkedLists(Product* first, Product* second, int sortBy) {
     bool condition = false;
     if (sortBy == 1) condition = first->stockQuantity <= second->stockQuantity;
     else if (sortBy == 2) condition = first->productPrice <= second->productPrice;
-    else condition = first->productId <= second->productId;
+    else condition = first->productId <= second->productId; 
 
     Product* result = nullptr;
     if (condition) {
@@ -423,37 +434,36 @@ void ProductLinkedList::deleteNode(int id) {
     }
 }
 
-Product* getMiddleNode(Product* start, Product* end) {
-    if (start == nullptr) return nullptr;
-    Product* slow = start;
-    Product* fast = start->next;
-
-    while (fast != end) {
-        fast = fast->next;
-        if (fast != end) {
-            slow = slow->next;
-            fast = fast->next;
-        }
-    }
-    return slow;
-}
-
 Product* ProductLinkedList::binarySearch(int targetId) {
     if (count == 0) return nullptr;
-    sortList(0); // Ensure it's sorted by ID for Binary Search logic
+    
+    sortList(0);
 
-    Product* start = head;
-    Product* end = nullptr;
-
-    while (start != end) {
-        Product* mid = getMiddleNode(start, end);
-        if (mid == nullptr) return nullptr;
-
-        if (mid->productId == targetId) return mid;
-        else if (mid->productId > targetId) end = mid;
-        else start = mid->next;
+    Product** arr = new Product*[count];
+    Product* curr = head;
+    for (int i = 0; i < count; i++) {
+        arr[i] = curr;
+        curr = curr->next;
     }
-    return nullptr;
+
+    int low = 0;
+    int high = count - 1;
+    Product* foundProduct = nullptr;
+
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        if (arr[mid]->productId == targetId) {
+            foundProduct = arr[mid];
+            break;
+        } else if (arr[mid]->productId < targetId) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+
+    delete[] arr;
+    return foundProduct;
 }
 
 void ProductLinkedList::display() {
@@ -468,8 +478,9 @@ void ProductLinkedList::display() {
     }
 }
 
-
-// ROLE CLASSES IMPLEMENTATION (Admin Specs Compliant)
+// ========================================
+// ROLE CLASSES IMPLEMENTATION 
+// ========================================
 class AdminMenu : public UserClass {
 public:
     AdminMenu(string un, string pw) : UserClass(un, pw, "Admin") {}
@@ -478,16 +489,20 @@ public:
         int id, qty; string name, cat, zone, supplier; double price;
         cout << "\n--- Add Product ---" << endl;
         cout << "ID: "; id = getSafeInput();
-        cout << "Name: "; cin >> name;
-        cout << "Category: "; cin >> cat;
+        
+        cin.ignore(1000, '\n');
+        cout << "Name: "; getline(cin, name); name = cleanString(name);
+        cout << "Category: "; getline(cin, cat); cat = cleanString(cat);
         cout << "Quantity: "; qty = getSafeInput();
-        cout << "Zone: "; cin >> zone;
-        cout << "Supplier: "; cin >> supplier;
+        
+        cin.ignore(1000, '\n');
+        cout << "Zone: "; getline(cin, zone); zone = cleanString(zone);
+        cout << "Supplier: "; getline(cin, supplier); supplier = cleanString(supplier);
         cout << "Price: RM "; cin >> price;
 
         inv.insertNode(id, name, cat, qty, zone, supplier, price);
         cout << "[Success] Product added to linked list!" << endl;
-        saveInventoryToFile(inv); // Dynamic saving
+        saveInventoryToFile(inv); 
     }
 
     void updateStock(ProductLinkedList& inv) {
@@ -510,8 +525,8 @@ public:
     void sortAndDisplay(ProductLinkedList& inv) {
         int s; 
         cout << "\n--- Sort Inventory ---" << endl;
-        cout << "Sort by (1:Qty, 2:Price): "; s = getSafeInput();
-        if (s == 1 || s == 2) {
+        cout << "Sort by (1:Qty, 2:Price, 3:Product ID): "; s = getSafeInput();
+        if (s == 1 || s == 2 || s == 3) {
             inv.sortList(s); 
             inv.display();
         } else {
@@ -521,7 +536,7 @@ public:
 
     void searchProduct(ProductLinkedList& inv) {
         int id; 
-        cout << "\n--- Search Product ---" << endl;
+        cout << "\n--- Search Product (Binary Search) ---" << endl;
         cout << "Enter Product ID: "; id = getSafeInput();
 
         Product* p = inv.binarySearch(id);
@@ -566,7 +581,7 @@ public:
         Product* p = inv.binarySearch(id);
         if (p != NULL) {
             inv.deleteNode(id);
-            cout << "[Success] Product deleted." << endl;
+            cout << "[Success] Product deleted from memory safely." << endl;
             saveInventoryToFile(inv);
         } else {
             cout << "[Error] Product ID not found." << endl;
@@ -591,7 +606,7 @@ public:
     void displayMenu() override {
         int choice;
         bool inMenu = true;
-        AdminMenu tempProxy(username, password); // Proxy Design pattern reuse
+        AdminMenu tempProxy(username, password); 
         while (inMenu) {
             cout << "\n=== [MASTER] SuperAdmin Panel | User: " << username << " ===" << endl;
             cout << "1. View Inventory\n2. Sort Inventory\n3. Search Product\n4. Add Product\n5. Update Stock\n";
@@ -611,18 +626,19 @@ public:
     }
 };
 
-// Customer Implementation
+// CUSTOMER CLASS DECLARATION
 class Customer : public UserClass {
 private:
-    Order* head; 
+    Order* head;
     Order* tail;
 public:
     Customer(string un, string pw) : UserClass(un, pw, "Customer"), head(nullptr), tail(nullptr) {}
     ~Customer();
-    void displayMenu() override;
-    void addOrder(); 
-    void displayOrders(); 
+    
     void syncFromGlobalList();
+    void addOrder();
+    void displayOrders();
+    void displayMenu() override;
 };
 
 Customer::~Customer() {
@@ -646,8 +662,14 @@ void Customer::syncFromGlobalList() {
     Order* current = orderHead;
     while (current != nullptr) {
         if (current->operatorName == this->username) { 
-            Order* newOrder = new Order(*current); 
+            Order* newOrder = new Order;
+            newOrder->orderId = current->orderId;
+            newOrder->productId = current->productId;
+            newOrder->dispatchQuantity = current->dispatchQuantity;
+            newOrder->operatorName = current->operatorName;
+            newOrder->orderDate = current->orderDate;
             newOrder->next = nullptr;
+            
             if (head == nullptr) { head = newOrder; tail = newOrder; }
             else { tail->next = newOrder; tail = newOrder; }
         }
@@ -680,12 +702,17 @@ void Customer::addOrder() {
     newOrder->operatorName = this->username; 
     newOrder->next = nullptr;
     
-    // 1. Link into local context
     if (head == nullptr) { head = newOrder; tail = newOrder; }
     else { tail->next = newOrder; tail = newOrder; }
     
-    // 2. Link into global database log context
-    Order* globalNode = new Order(*newOrder);
+    Order* globalNode = new Order;
+    globalNode->orderId = newOrder->orderId;
+    globalNode->productId = newOrder->productId;
+    globalNode->dispatchQuantity = newOrder->dispatchQuantity;
+    globalNode->operatorName = newOrder->operatorName;
+    globalNode->orderDate = newOrder->orderDate;
+    globalNode->next = nullptr;
+
     if (orderHead == nullptr) { orderHead = globalNode; }
     else {
         Order* t = orderHead;
@@ -693,7 +720,6 @@ void Customer::addOrder() {
         t->next = globalNode;
     }
 
-    // 3. Deduct actual stocks instantly & write directly to disk files
     checkProd->stockQuantity -= newOrder->dispatchQuantity;
     saveInventoryToFile(inventory);
     saveOrdersToFile(); 
@@ -728,14 +754,16 @@ void Customer::displayMenu() {
 void registerCustomer(){
     string username, password, confirmPassword;
     cout <<"\n~+~Customer Registration~+~" <<endl;
-    cout <<"Enter username: "; cin >> username;
+    
+    cout << "Enter username: "; 
+    getline(cin, username); username = cleanString(username);
     
     if (isUsernameExist(username)){
         cout <<"System Error: Username already exists. Please try another username." << endl;
         return;
     }
-    cout << "Enter password: "; cin >> password;
-    cout << "Confirm password: "; cin >> confirmPassword;
+    cout << "Enter password: "; getline(cin, password); password = cleanString(password);
+    cout << "Confirm password: "; getline(cin, confirmPassword); confirmPassword = cleanString(confirmPassword);
     
     if (password != confirmPassword){
         cout << "System Error: Password confirmation does not match." <<endl;
@@ -767,14 +795,16 @@ void clearMemory(){
     cout <<"System: Memory cleared safely." << endl;
 }
 
-// Main Gateway
+// =====================================
+// Main Execution Gateway
+// ======================================
 int main() {
     cout <<"==========================================="<<endl;
-    cout <<"         Warehouse Inventory System        "<<endl;
+    cout <<"        Warehouse Inventory System         "<<endl;
     cout <<"==========================================="<<endl;
     
-    loadDataFromFile();
     loadUsersFromFile();
+    loadDataFromFile();
     loadOrdersFromFile();
     checkRequiredFiles();
     
@@ -838,6 +868,7 @@ int main() {
             }
             case 4:{
                 registerCustomer();
+                if (cin.peek() == '\n') cin.ignore(); 
                 break;
             }
             case 5: {
