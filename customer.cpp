@@ -92,26 +92,63 @@ void Customer::searchOrder() {
 	cout<< "Enter the Order ID you want to search: ";
 	cin>> targetId;
 	
-	Order*current = head;
-	bool found = false;
+	sortOrders(1);
 	
-	while(current != nullptr){
-		if (current->orderId == targetId){
-			cout << "\n[SUCCESS] Record Found!\n";
-            cout << "---------------------------------\n";
-            cout << "  Order ID : " << current->orderId << "\n";
-            cout << "  Product ID : " << current->productId << "\n";
-            cout << "  Quantity   : " << current->dispatchQuantity << "\n";
-            cout << "  Order Date : " << current->orderDate << "\n";
-            cout << "---------------------------------\n";
-            found = true;
-            break;
-		}
+	int count = 0;
+	Order* current = head;
+	
+	while(current !=nullptr){
+		count++;
 		current = current->next;
 	}
-	if(!found){
+	
+	Order** tempArray = new Order*[count];
+	
+	current = head;
+	int i=0;
+	
+	while (current !=nullptr){
+		tempArray[i] = current;
+		i++;
+		current = current->next;
+	}
+	
+	int first = 0;
+	int last = count - 1;
+	int mid;
+	Order* found = nullptr;
+	
+	while (first <= last){
+		mid = (first + last) / 2;
+		
+		if(tempArray[mid]->orderId == targetId){
+			found = tempArray[mid];
+			break;
+		}
+		else if(tempArray[mid]->orderId > targetId){
+			last = mid -1;
+		}
+		else{
+			first = mid + 1
+		}
+	}
+	
+	if(found != nullptr){
+		cout << "\n[SUCCESS] Record Found using Binary Search!\n";
+        cout << "---------------------------------\n";
+        cout << "Order ID   : " << found->orderId << "\n";
+        cout << "Product ID : " << found->productId << "\n";
+        cout << "Quantity   : " << found->dispatchQuantity << "\n";
+        cout << "Order Date : " << found->orderDate << "\n";
+        cout << "---------------------------------\n";
+	}
+	
+	else{
 		cout << "\n[ERROR] Order ID " << targetId << " not found in the system.\n";
 	}
+	
+	delete[] tempArray
+
 }
 
 void Customer::editOrder(){
