@@ -1,29 +1,92 @@
 #include<iostream>
 #include<string>
 #include <fstream>
+#include <sstream>  // Required for string splitting (username|password|role)
 #include"structures.h"
 #include"customer.h"
 
 using namespace std;
 
+// External global variable defined in main.cpp -- the single linked list
+// holding every logged-in-capable account (Admin, SuperAdmin, Customer).
+extern User* userHead;
+
+// =========================================================
+// File I/O Engine -- Customer accounts only.
+// Admin & SuperAdmin accounts are handled separately by
+// loadAdminsFromFile() / saveAdminsToFile() in admin.cpp.
+// =========================================================
+
+void saveCustomersToFile() {
+    // Format: username|password|role  (role will always be "Customer" here)
+    ofstream outFile("data/Customer.txt", ios::out | ios::trunc);
+    if (!outFile) {
+        cout << "[System Warning] Cannot write to Customer.txt!" << endl;
+        return;
+    }
+    User* temp = userHead;
+    while (temp != NULL) {
+        if (temp->role == "Customer") {
+            outFile << temp->username << "|"
+                    << temp->password << "|"
+                    << temp->role << "\n";
+        }
+        temp = temp->next;
+    }
+    outFile.close();
+}
+
+void loadCustomersFromFile() {
+    ifstream inFile("data/Customer.txt");
+    if (!inFile) return;
+
+    string line;
+    while (getline(inFile, line)) {
+        if (line.empty()) continue;
+
+        // Defensive programming: strip trailing '\r' left by Windows line endings
+        if (!line.empty() && line[line.length() - 1] == '\r') {
+            line.erase(line.length() - 1);
+        }
+        if (line.empty()) continue;
+
+        stringstream ss(line);
+        string un, pw, role;
+        getline(ss, un,   '|');
+        getline(ss, pw,   '|');
+        getline(ss, role, '|');
+
+        if (role != "Customer") continue; // defensive: skip anything unexpected
+
+        User* n = new Customer(un, pw);
+
+        if (userHead == NULL) {
+            userHead = n;
+        } else {
+            User* temp = userHead;
+            while (temp->next != NULL) temp = temp->next;
+            temp->next = n;
+        }
+    }
+    inFile.close();
+}
+
 Customer::Customer(string username , string password) : User(username, password, "Customer"){
-	this->username = username;
-	this->password = password;
-	head = nullptr;
-	tail = nullptr;
+	head = NULL;
+	tail = NULL;
 }
 
 Customer::~Customer(){
 	Order* current = head;
 	
-	while(current != nullptr){
+	while(current != NULL){
 		Order* temp = current;
 		current = current->next;
 		delete temp;
 	}
 	
-	head = nullptr;
-	tail = nullptr;
+	head = NULL;
+	tail = NULL;
 }
 
 void Customer::addOrder(){
@@ -43,9 +106,9 @@ void Customer::addOrder(){
 	cin >> newOrder->orderDate;
 	
 	newOrder->operatorName = username;
-	newOrder->next = nullptr;
+	newOrder->next = NULL;
 	
-	if(head == nullptr){
+	if(head == NULL){
 		head = newOrder;
 		tail = newOrder;
 	} else{
@@ -59,7 +122,7 @@ void Customer::addOrder(){
 void Customer::displayOrders(){
 	cout<<"\n-- My Order Records --\n";
 	
-	if(head == nullptr){
+	if(head == NULL){
 		cout<<"[INFO] You have no order. Go to order!\n";
 		return;
 	}
@@ -67,7 +130,7 @@ void Customer::displayOrders(){
 	Order* current = head;
 	int recordcount = 1;
 	
-	while(current != nullptr){
+	while(current != NULL){
 		cout<<"Record #"<< recordcount<<"\n";
 		cout << "  Order ID : " << current->orderId << "\n";
         cout << "  Product ID : " << current->productId << "\n";
@@ -85,7 +148,7 @@ void Customer::displayOrders(){
 void Customer::searchOrder() {
 	cout<<"\n-- Search Order Record --\n";
 	
-	if(head == nullptr){
+	if(head == NULL){
 		cout << "[INFO] System id empty. No orders to search.\n";
 		return;
 	}
@@ -99,7 +162,7 @@ void Customer::searchOrder() {
 	int count = 0;
 	Order* current = head;
 	
-	while(current !=nullptr){
+	while(current !=NULL){
 		count++;
 		current = current->next;
 	}
@@ -109,7 +172,7 @@ void Customer::searchOrder() {
 	current = head;
 	int i=0;
 	
-	while (current !=nullptr){
+	while (current !=NULL){
 		tempArray[i] = current;
 		i++;
 		current = current->next;
@@ -118,7 +181,7 @@ void Customer::searchOrder() {
 	int first = 0;
 	int last = count - 1;
 	int mid;
-	Order* found = nullptr;
+	Order* found = NULL;
 	
 	while (first <= last){
 		mid = (first + last) / 2;
@@ -135,7 +198,7 @@ void Customer::searchOrder() {
 		}
 	}
 	
-	if(found != nullptr){
+	if(found != NULL){
 		cout << "\n[SUCCESS] Record Found using Binary Search!\n";
         cout << "---------------------------------\n";
         cout << "Order ID    : " << found->orderId << "\n";
@@ -156,7 +219,7 @@ void Customer::searchOrder() {
 
 void Customer::editOrder(){
 	cout << "\n--- Edit Booking Details ---\n";
-	if (head == nullptr) {
+	if (head == NULL) {
    	cout<<"[INFO] System is empty. No bookings to edit.\n";
 	return;
 }
@@ -168,7 +231,7 @@ cin>>targetId;
 Order* current = head;
 bool found = false;
 
-while(current != nullptr){
+while(current != NULL){
 	if(current->orderId == targetId){
 		cout<<"\n[RECORD FOUND]\n";
 		cout<<"Current Quantity for Product " << current->productId << " is: " << current->dispatchQuantity << "\n";
@@ -194,7 +257,7 @@ if(!found){
 }
 
 void Customer::deleteOrder(){
-	if (head == nullptr){
+	if (head == NULL){
 		cout<<"No Orders to delete!\n";
 		return;
 	}
@@ -204,19 +267,19 @@ void Customer::deleteOrder(){
 	cin>>targetId;
 	
 	Order* current = head;
-	Order* previous = nullptr;
+	Order* previous = NULL;
 	
-	while (current !=nullptr && current->orderId !=targetId){
+	while (current !=NULL && current->orderId !=targetId){
 		previous = current;
 		current = current->next;
 	}
 	
-	if (current == nullptr){
+	if (current == NULL){
 		cout << "Error Order ID"<<targetId<<"is not found.\n";
 		return;
 	}
 	
-	if (previous == nullptr){
+	if (previous == NULL){
 		head = head->next;
 	} else {
 		previous->next = current->next;
@@ -235,7 +298,7 @@ void Customer::deleteOrder(){
 void Customer::generateReport(){
 	cout<< "\n--- Generating Order Summary Report ---\n";
 	
-	if(head == nullptr){
+	if(head == NULL){
 		cout<< "[INFO] System is empty. No orders to report.\n";
 		return;
 	}
@@ -255,7 +318,7 @@ void Customer::generateReport(){
     outFile << "=========================================\n";
     
     Order* current = head;
-    while (current!= nullptr){
+    while (current!= NULL){
     	outFile << "Order ID: " << current->orderId
                 << " | Product ID: " << current->productId
                 << " | Category Id: " << current->categoryId << "\n"
@@ -280,13 +343,13 @@ void Customer::generateReport(){
 }
 
 void Customer::sortOrders(int criteria) {
-    if (head == nullptr || head->next == nullptr) {
+    if (head == NULL || head->next == NULL) {
         return;
     }
 
     bool swapped;
     Order* current;
-    Order* lastPtr = nullptr;
+    Order* lastPtr = NULL;
 
     do {
         swapped = false;
@@ -428,4 +491,3 @@ catch(int invalidChoice){
 		
 
 	}
-	

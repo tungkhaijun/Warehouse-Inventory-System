@@ -3,14 +3,27 @@
 #include <fstream>
 #include <string>
 #include "structures.h"
+#include "customer.cpp"
 #include "customer.h"
-#include "backend.h"
+#include "admin.cpp"
 #include "admin.h"
+#include "backend.h"
+//#include "Lead_backend.cpp"
 
 using namespace std;
 
-Product* inventoryHead = NULL;
-Order* orderHead = NULL;
+// =========================================================
+// Global State
+// =========================================================
+// NOTE: Inventory and User data live ONLY here now.
+// All loading/saving goes through dedicated data/ functions:
+//   loadInventoryFromFile() / saveInventoryToFile()   (admin.cpp)    -> data/Inventory.txt
+//   loadAdminsFromFile()    / saveAdminsToFile()      (admin.cpp)    -> data/Admin.txt    (Admin/SuperAdmin only)
+//   loadCustomersFromFile() / saveCustomersToFile()   (customer.cpp) -> data/Customer.txt (Customer only)
+// All accounts end up on the same userHead linked list regardless of
+// which file they were loaded from — login logic doesn't care.
+// The old inventoryHead / Inventory.txt (root) / Admin.txt (root) system
+// has been removed to avoid two systems writing/reading different files.
 User* userHead = NULL;
 ProductLinkedList globalInventory;
 
@@ -39,193 +52,7 @@ int getSafeInput(){
 	}
 } 
 
-//2. Load Inventory Data
-void loadDataFromFile(){
-	ifstream inFile("Inventory.txt");
-	
-	if (!inFile){
-		cout << "System Warning: Inventory.txt not found. Starting with empty inventory." << endl;
-		return;
-	}
-	
-	int productId, stockQuantity;
-	string productName, category, zone, supplier;
-	double productPrice;
-	
-	while (inFile >> productId >> productName >> category >> stockQuantity >> zone >> supplier >> productPrice){
-		
-		Product* newNode = new Product;
-		newNode->productId = productId;
-		newNode->productName = productName;
-		newNode->category = category;
-		newNode->stockQuantity = stockQuantity;
-		newNode->zone = zone;
-		newNode->supplier = supplier;
-		newNode->productPrice = productPrice;
-		newNode->next = NULL;
-		
-		if (inventoryHead == NULL){
-			inventoryHead = newNode;
-		}else{
-			Product* temp = inventoryHead;
-			while (temp->next != NULL){
-				temp = temp->next;
-			}
-			temp->next = newNode;
-		}
-	}
-	inFile.close();
-	cout<<"System: Inventory data loaded succesfully."<<endl;
-}
-
-//3. Load Order Data
-void loadOrdersFromFile(){
-	ifstream inFile("Orders.txt");
-	
-	if(!inFile){
-		cout <<"System Warning: Orders.txt not found. Starting with empty order records." << endl;
-		return;
-	}
-	
-	int orderId, productId, dispatchQuantity;
-	string operatorName, orderDate;
-	
-	while (inFile >> orderId >> productId >> dispatchQuantity >> operatorName >> orderDate){
-	   Order* newNode = new Order;
-	   newNode->orderId = orderId;
-	   newNode->productId = productId;
-	   newNode->dispatchQuantity = dispatchQuantity;
-	   newNode->operatorName = operatorName;
-	   newNode->orderDate = orderDate;
-	   newNode->next = NULL;
-	   
-	   if(orderHead == NULL){
-	   	orderHead = newNode;
-	   } else{
-	   	Order* temp = orderHead;
-	   	while (temp->next !=NULL){
-	   		temp = temp->next;
-		   }
-		   temp->next = newNode;
-	   }
-   }
-
-  inFile.close();
-  cout << "System: Order data loaded successfully." << endl;
-}
-
-
-//4. Load User Data
-void loadUsersFromFile(){
-	ifstream inFile("Admin.txt");
-	
-	if(!inFile){
-		cout <<"System Error: Admin.txt not found! Login will fail." << endl;
-		return;
-	}
-	
-	string user, pass, role;
-	
-	// Use getline to parse data separated by the pipe '|' character
-    while (getline(inFile, user, '|')) {
-        getline(inFile, pass, '|');
-        getline(inFile, role); 
-
-        // Defensive programming: remove extra windows new line characters
-        if (!role.empty() && role[role.length() - 1] == '\r') {
-            role.erase(role.length() - 1);
-        }
-
-        User* newNode = NULL;
-
-        if (role == "Admin") {
-        newNode = new Admin(user, pass);
-        }
-        else if (role == "SuperAdmin") {
-        newNode = new SuperAdmin(user, pass);
-        }
-        else if (role == "Customer") {
-        newNode = new Customer(user, pass);
-        }
-        else {
-        cout << "System Warning: Unknown role skipped for user " << user << endl;
-        continue;
-       }
-		
-		newNode->next = NULL;
-		
-        if(userHead == NULL){
-        	userHead = newNode;
-		}
-		else{
-			User* temp = userHead;
-			
-			while(temp->next != NULL){
-				temp = temp->next;
-			}
-			
-			temp->next = newNode;
-		}
-     }
-     inFile.close();
-	 cout <<"System: User credentials loaded succesfully." <<endl;	
-}
-
-
-//5. Save Inventory Data
-void saveDataToFile(){
-	ofstream outFile("Inventory.txt", ios::trunc);
-	
-	if(!outFile){
-		cout<<"System Error: Could not open Inventory.txt to save data."<<endl;
-		return;
-	}
-	
-	Product* temp = inventoryHead;
-	
-	while(temp != NULL){
-		outFile << temp->productId << " "
-		        << temp->productName<< " "
-		        << temp->category<< " "
-		        << temp->stockQuantity<< " "
-		        << temp->zone<< " "
-		        << temp->supplier <<" "
-		        << temp->productPrice <<"\n";
-	
-	temp = temp->next;
-	}
-	
-	outFile.close();
-	cout << "System: All inventory data succesfully saved to file." << endl;
-}
-
-
-//6. Save Order Data
-void saveOrdersToFile(){
-	ofstream outFile("Orders.txt", ios::trunc);
-	
-	if(!outFile){
-		cout << "System Error: Could not open Orders.txt to save data." << endl;
-		return;
-	}
-	
-	Order* temp = orderHead;
-	
-	while (temp != NULL){
-		outFile << temp->orderId << " "
-                << temp->productId << " "
-				<< temp->dispatchQuantity << " "
-				<< temp->operatorName << " "
-				<< temp->orderDate <<"\n";
-				
-	  temp = temp->next;		
-	}
-	
-	outFile.close();
-	cout << "System: Order data successfully saved to file." << endl;
-}
-
-//7. Check Required for User
+//2. Check Required Support Files (Suppliers / Logistics), kept under data/
 void checkSupportFile(const char* fileName){
 	ifstream inFile(fileName);
 	
@@ -240,11 +67,11 @@ void checkSupportFile(const char* fileName){
 	}
 	
 	void checkRequiredFiles(){
-		checkSupportFile("Suppliers.txt");
-		checkSupportFile("Logistics.txt");
+		checkSupportFile("data/Suppliers.txt");
+		checkSupportFile("data/Logistics.txt");
 	}
 	
-//8.Check whether username exist
+//3.Check whether username exist
 bool isUsernameExist(string username){
 	User* temp = userHead;
 	
@@ -257,7 +84,7 @@ bool isUsernameExist(string username){
 	return false;
 }
 
-//9. Register Validation
+//4. Register Validation
 bool isValidUsername(string username){
 	if (username.length() < 3 || username.length() > 20){
 		return false;
@@ -293,7 +120,7 @@ bool isValidPassword(string password){
 }
 
 
-//10. Add usernode to linked list
+//5. Add usernode to linked list (in-memory only; caller decides when to persist)
 void addUserToList(string username, string password, string role){
     User* newNode = NULL;
 
@@ -327,30 +154,7 @@ void addUserToList(string username, string password, string role){
     }
 }
 
-//11.Save user to Admin.txt
-void saveUsersToFile(){
-	ofstream outFile("Admin.txt", ios::trunc);
-	
-	if(!outFile){
-		cout << "System Error: Could not open Admin.txt to save user data." << endl;
-		return;
-	}
-	
-	User* temp = userHead;
-	
-	while (temp != NULL){
-		outFile << temp->username << "|"
-		        << temp->password << "|"
-		        << temp->role <<"\n";
-		        
-		temp = temp->next;
-	}
-	
-	outFile.close();
-	cout <<"System: User data succesfully saved to file." << endl;
-}
-
-//12. Customer registration function
+//6. Customer registration function
 void registerCustomer(){
 	string username, password, confirmPassword;
 	bool validUsername = false;
@@ -413,11 +217,12 @@ void registerCustomer(){
   }
   
 	addUserToList(username, password, "Customer");
-	saveUsersToFile();
+	saveCustomersToFile();
 	
 	cout <<"System: Customer account registered successfully." << endl;
 }
-//13. Authentication for User
+
+//7. Authentication for User
 User* authenticateUser(string inputUser, string inputPass, string expectedRole) {
     User* temp = userHead;
     
@@ -432,24 +237,8 @@ User* authenticateUser(string inputUser, string inputPass, string expectedRole) 
     return NULL; 
 }
 
-//14. Clear Memory to prevent Memory Leak
+//8. Clear Memory to prevent Memory Leak
 void clearMemory(){
-	Product* productTemp;
-	
-	while (inventoryHead != NULL){
-		productTemp = inventoryHead;
-		inventoryHead = inventoryHead ->next;
-		delete productTemp;
-	}
-	
-	Order* orderTemp;
-	
-	while (orderHead != NULL){
-		orderTemp = orderHead;
-		orderHead = orderHead->next;
-		delete orderTemp;
-	}
-	
 	User* userTemp;
 	
 	while(userHead != NULL){
@@ -462,15 +251,19 @@ void clearMemory(){
 }
 
 
-//15. Main Menu
+//9. Main Menu
 int main() {
     cout <<"==========================================="<<endl;
     cout <<"        Warehouse Inventory System         "<<endl;
     cout <<"==========================================="<<endl;
     
-    loadDataFromFile();
-    loadUsersFromFile();
-    loadOrdersFromFile();
+    // Load everything from data/ — single source of truth for both
+    // inventory (globalInventory) and accounts (userHead).
+    // Admin/SuperAdmin accounts and Customer accounts are loaded from
+    // separate files but end up on the same userHead linked list.
+    loadInventoryFromFile(globalInventory);
+    loadAdminsFromFile();
+    loadCustomersFromFile();
     checkRequiredFiles();
     
     bool isRunning = true;
@@ -506,20 +299,20 @@ int main() {
                     currentUser->displayMenu(); 
                 }
                 else{
-				  currentUser = authenticateUser(inputUser, inputPass, "SuperAdmin");
-				  
-				  if(currentUser != NULL) {
-                    cout << "\nAccess Granted. Welcome, SuperAdmin " << inputUser << "!" << endl;  
-                    currentUser->displayMenu(); 
-                  }
-                  else {
-                    cout << "\nAccess Denied. Incorrect username or password." << endl;
+                    currentUser = authenticateUser(inputUser, inputPass, "SuperAdmin");
+
+                    if(currentUser != NULL) {
+                        cout << "\nAccess Granted. Welcome, SuperAdmin " << inputUser << "!" << endl;
+                        currentUser->displayMenu();
+                    }
+                    else {
+                        cout << "\nAccess Denied. Incorrect username or password." << endl;
+                    }
                 }
+
+                break;
             }
-            
-            break;
-        }
-        
+
             case 2: {
                 cout << "\n--- Customer Login ---" << endl;
                 cout << "Username: ";
@@ -551,10 +344,10 @@ int main() {
         }
     }
 
-    // Save all updated data before exit
-    saveDataToFile();
-    saveOrdersToFile();
-    saveUsersToFile();
+    // Save all updated data before exit — same data/ files used at startup.
+    saveInventoryToFile(globalInventory);
+    saveAdminsToFile();
+    saveCustomersToFile();
     clearMemory();
     
     cout << "System Terminated." << endl;

@@ -10,13 +10,17 @@ using namespace std;
 
 struct Order;
 
+// =========================================================
+// File I/O Engine Declarations -- Customer accounts only.
+// (Admin/SuperAdmin accounts are declared in admin.h)
+// =========================================================
+void saveCustomersToFile();
+void loadCustomersFromFile();
+
 class Customer : public User{
 	private:
 		Order* head;
 		Order* tail;
-		
-		string username;
-		string password;
 		
 	public:
 		Customer(string username = "", string password =""); 

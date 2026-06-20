@@ -4,3 +4,5 @@ admin03|34567|Admin
 manager01|11111|Admin
 manager02|22222|Admin
 manager03|33333|Admin
+admin|admin123|Admin
+TEST_ADMIN|abc123|Admin
