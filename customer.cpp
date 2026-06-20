@@ -5,8 +5,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
-#include"structures.h"
-#include"customer.h"
+#include "structures.h"
+#include "customer.h"
 
 using namespace std;
 
@@ -85,6 +85,48 @@ Product* findProductById(int productId) {
 
     inFile.close();
     return NULL;
+}
+
+void displayAvailableInventory() {
+    ifstream inFile("data\\Inventory.txt");
+
+    if (!inFile) {
+        cout << "[ERROR] Cannot open data\\Inventory.txt.\n";
+        return;
+    }
+
+    cout << "\n================ AVAILABLE INVENTORY ================\n";
+    cout << "Product ID | Product Name | Category | Stock | Price\n";
+    cout << "-----------------------------------------------------\n";
+
+    string line;
+
+    while (getline(inFile, line)) {
+        if (line == "") {
+            continue;
+        }
+
+        stringstream ss(line);
+        string idStr, name, category, stockStr, zone, supplier, priceStr;
+
+        getline(ss, idStr, '|');
+        getline(ss, name, '|');
+        getline(ss, category, '|');
+        getline(ss, stockStr, '|');
+        getline(ss, zone, '|');
+        getline(ss, supplier, '|');
+        getline(ss, priceStr, '|');
+
+        cout << idStr << " | "
+             << name << " | "
+             << category << " | "
+             << stockStr << " | RM "
+             << priceStr << "\n";
+    }
+
+    cout << "=====================================================\n";
+
+    inFile.close();
 }
 
 bool reduceInventoryStock(int productId, int orderQty) {
@@ -288,6 +330,8 @@ void Customer::addOrder(){
     Order* newOrder = new Order;
 
     cout << "\n-- Create New Order --\n";
+    
+    displayAvailableInventory();
 
     // System auto-generate Order ID and Date/Time
     newOrder->orderId = getNextOrderId(head);
@@ -314,10 +358,11 @@ void Customer::addOrder(){
     cin >> newOrder->dispatchQuantity;
 
     if (newOrder->dispatchQuantity <= 0) {
-        cout << "[ERROR] Quantity must be more than 0. Order cancelled.\n";
-        delete newOrder;
-        return;
-    }
+    cout << "[ERROR] Quantity must be more than 0. Order cancelled.\n";
+    delete newOrder;
+    delete selectedProduct;
+    return;
+	}
 
     newOrder->categoryId = 0;
     newOrder->operatorName = username;
@@ -342,7 +387,7 @@ void Customer::addOrder(){
         return;
     }
     
-    if (newOrder->dispatchQuantity <= 0) {
+    if (!reduceInventoryStock(newOrder->productId, newOrder->dispatchQuantity)) {
     cout << "[ERROR] Stock update failed. Order cancelled.\n";
     delete newOrder;
     delete selectedProduct;
@@ -641,47 +686,52 @@ void Customer::displayMenu(){
 		cout<<"\n==============================\n";
 		cout<<"\n       Customer Dashboard     \n";
 		cout<<"\n==============================\n";
-		cout<<"1. Make a New Order\n";
-		cout<<"2. Edit Order Details\n";
-		cout<<"3. Delete the Orders\n";
-		cout<<"4. View the Orders\n";
-		cout<<"5. Search Orders\n";
-		cout<<"6. Sort Orders\n";
-		cout<<"7. Generate Order Report\n";
-		cout<<"8. Logout\n";
+		cout<<"1. View Available Inventory\n";
+		cout<<"2. Make a New Order\n";
+		cout<<"3. Edit Order Details\n";
+		cout<<"4. Delete the Orders\n";
+		cout<<"5. View the Orders\n";
+		cout<<"6. Search Orders\n";
+		cout<<"7. Sort Orders\n";
+		cout<<"8. Generate Order Report\n";
+		cout<<"9. Logout\n";
 		cout<<"\n==============================\n";
-		cout<<"Enter your Choice (1-8): ";
+		cout<<"Enter your Choice (1-9): ";
 		
 		try{
 			cin>>choice;
 			if(cin.fail()){
 				throw string("Invalid input detected! Please enter the valid number!");
 			}
-		if (choice < 1 || choice>8){
+		if (choice < 1 || choice>9){
 			throw choice;
 		}
 		switch (choice){
 			case 1:
+			    cout << "\n[SYSTEM] Loading Available Inventory...\n";
+			    displayAvailableInventory();
+		     	break;
+			case 2:
 				cout<<"\n[SYSTEM] Loading Add Order Module...\n";
 				addOrder();
 				break;
-			case 2:
+			case 3:
 				cout<<"\n[SYSTEM] Loadng Edit Order Module...\n";
 				editOrder();
 				break;
-			case 3:
+			case 4:
                 cout << "\n[SYSTEM] Loading Delete Order Module...\n";
                 deleteOrder(); 
                 break;
-			case 4:
+			case 5:
 				cout<<"\n[SYSTEM] Displaying All Records...\n";
 				displayOrders();
 				break;
-			case 5:
+			case 6:
 				cout<<"\n[SYSTEM] Search The Records...\n";
 				searchOrder();
 				break;
-			case 6:
+			case 7:
 				cout<<"\n[SYSTEM] Sorting the Orders...\n";{
 					
 				int sortChoice;
@@ -700,12 +750,12 @@ void Customer::displayMenu(){
 				break;
 			}
 				
-			case 7:
+			case 8:
 				cout<<"\n[SYSTEM] Generating Booking's Report...\n";
 				generateReport();
 				break;
 				
-			case 8:
+			case 9:
 				cout << "\n[SYSTEM] Logging out...\n";
 				keepRunning = false;
 				break;
@@ -720,7 +770,7 @@ catch(string errorMsg){
 }
 
 catch(int invalidChoice){
-	cout<<"\n[ERROR]"<<invalidChoice<<"is OUT of Range! Please Enter 1-8...\n";
+	cout<<"\n[ERROR]"<<invalidChoice<<"is OUT of Range! Please Enter 1-9...\n";
 }
 		}
 		

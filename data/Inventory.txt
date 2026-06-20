@@ -25,7 +25,7 @@
 1025|HDMI Cable|Electronics|90|A10|UGreen|15
 1026|Backpack|Apparel|60|E01|Samsonite|110
 1027|T-Shirt|Apparel|150|E02|Uniqlo|20
-1028|Jacket|Apparel|45|E03|Adidas|85
+1028|Jacket|Apparel|40|E03|Adidas|85
 1029|Cap|Apparel|80|E04|Nike|25
 1030|Socks Pack|Apparel|300|E05|Puma|10
 1031|Router|Electronics|22|B04|TP-Link|60
