@@ -1,10 +1,123 @@
 #include<iostream>
 #include<string>
 #include <fstream>
+#include <sstream>
+#include <ctime>
 #include"structures.h"
 #include"customer.h"
 
 using namespace std;
+
+extern Product* inventoryHead;
+
+void forceReloadInventory();
+
+string getCurrentDateTime() {
+    time_t now = time(0);
+    tm* localTime = localtime(&now);
+
+    char buffer[30];
+    strftime(buffer, 30, "%Y-%m-%d_%H:%M:%S", localTime);
+
+    return string(buffer);
+}
+
+int getNextOrderId(Order* head) {
+    int maxId = 1000;
+    Order* current = head;
+
+    while (current != NULL) {
+        if (current->orderId > maxId) {
+            maxId = current->orderId;
+        }
+        current = current->next;
+    }
+
+    return maxId + 1;
+}
+
+Product* findProductById(int productId) {
+    ifstream inFile("data\\Inventory.txt");
+
+    if (!inFile) {
+        cout << "[ERROR] Cannot open Inventory.txt. Please put Inventory.txt in the same folder as main.exe.\n";
+        return NULL;
+    }
+
+    string line;
+
+    while (getline(inFile, line)) {
+        if (line == "") {
+            continue;
+        }
+
+        stringstream ss(line);
+        string idStr, name, category, stockStr, zone, supplier, priceStr;
+
+        getline(ss, idStr, '|');
+        getline(ss, name, '|');
+        getline(ss, category, '|');
+        getline(ss, stockStr, '|');
+        getline(ss, zone, '|');
+        getline(ss, supplier, '|');
+        getline(ss, priceStr, '|');
+
+        int currentId = atoi(idStr.c_str());
+
+        if (currentId == productId) {
+            Product* foundProduct = new Product;
+
+            foundProduct->productId = atoi(idStr.c_str());
+            foundProduct->productName = name;
+            foundProduct->category = category;
+            foundProduct->stockQuantity = atoi(stockStr.c_str());
+            foundProduct->zone = zone;
+            foundProduct->supplier = supplier;
+            foundProduct->productPrice = atof(priceStr.c_str());
+            foundProduct->next = NULL;
+
+            inFile.close();
+            return foundProduct;
+        }
+    }
+
+    inFile.close();
+    return nullptr;
+}
+
+void saveOrderSummaryFile(Order* head) {
+    ofstream outFile("data\\OrderSummary.txt");
+
+    if (!outFile) {
+        cout << "[ERROR] Unable to create OrderSummary.txt!\n";
+        return;
+    }
+
+    outFile << "=========================================\n";
+    outFile << "        ORDER SUMMARY REPORT             \n";
+    outFile << "=========================================\n";
+
+    Order* current = head;
+
+    while (current != NULL) {
+        Product* product = findProductById(current->productId);
+
+        outFile << "Order ID: " << current->orderId
+                << " | Product ID: " << current->productId;
+
+        if (product != NULL) {
+            outFile << " | Product: " << product->productName
+                    << " | Category: " << product->category;
+        }
+
+        outFile << " | Quantity: " << current->dispatchQuantity
+                << " | Date: " << current->orderDate << "\n";
+
+        current = current->next;
+    }
+
+    outFile.close();
+}
 
 Customer::Customer(string username , string password) : User(username, password, "Customer"){
 	this->username = username;
@@ -27,23 +140,73 @@ Customer::~Customer(){
 }
 
 void Customer::addOrder(){
+	forceReloadInventory();
 	Order* newOrder = new Order;
 	
 	cout<<"\n-- Create New Order --\n";
-	cout<<"Enter Order ID (e.g: 1000): ";
-	cin >> newOrder->orderId;
+	
+	newOrder->orderId = getNextOrderId(head);
+	newOrder->orderDate = getCurrentDateTime();
+	
+	cout << "Generated Order ID: "<< newOrder->orderId << "\n";
+	cout << "Current Date/Time : " << newOrder->orderDate << "\n";
 	
 	cout<<"Enter Product ID you want to order?: ";
 	cin >> newOrder->productId;
 	
+	Product* selectedProduct = findProductById(newOrder->productId);
+	
+	if(selectedProduct == nullptr){
+		cout << "[ERROR] Product ID " << newOrder->productId << " not found. Order cancelled.\n";
+		delete newOrder;
+		return;
+	}
+	
+	cout << "[SYSTEM] Product Found : " << selectedProduct->productName << "\n";
+    cout << "[SYSTEM] Category      : " << selectedProduct->category << "\n";
+	
 	cout<<"Enter Quantity: ";
 	cin >> newOrder->dispatchQuantity;
 	
-	cout<<"Enter Order Date: ";
-	cin >> newOrder->orderDate;
+	if(newOrder->dispatchQuantity <= 0){
+		cout << "[ERROR] Quantity must be more than 0. Order cancelled.\n";
+		delete newOrder;
+		return;
+	}
 	
+	if (newOrder->dispatchQuantity > selectedProduct->stockQuantity){
+        cout << "[ERROR] Not enough stock available. Order cancelled.\n";
+        cout << "Available stock: " << selectedProduct->stockQuantity << "\n";
+        delete newOrder;
+        return;
+	}
+	
+	newOrder->categoryId = 0;
 	newOrder->operatorName = username;
 	newOrder->next = nullptr;
+	
+	cout << "\nPlease confirm your order:\n";
+    cout << "---------------------------------\n";
+    cout << "Order ID   : " << newOrder->orderId << "\n";
+    cout << "Product ID : " << newOrder->productId << "\n";
+    cout << "Product    : " << selectedProduct->productName << "\n";
+    cout << "Category   : " << selectedProduct->category << "\n";
+    cout << "Quantity   : " << newOrder->dispatchQuantity << "\n";
+    cout << "Date/Time  : " << newOrder->orderDate << "\n";
+    cout << "---------------------------------\n";
+    
+    char confirm;
+    cout << "Confirm this order? (Y/N): ";
+    cin >> confirm;
+    
+    if (confirm != 'Y' && confirm != 'y'){
+    	cout << "[SYSTEM] Order cancelled by customer.\n";
+    	delete newOrder;
+    	delete selectedProduct;
+    	return;
+	}
+	
+	selectedProduct->stockQuantity = selectedProduct->stockQuantity - newOrder->dispatchQuantity;
 	
 	if(head == nullptr){
 		head = newOrder;
@@ -53,7 +216,13 @@ void Customer::addOrder(){
 		tail = newOrder;
 	}
 	
-	cout << "\n[SUCCESS] Order ID"<<newOrder->orderId<<"has been successfully added to the system!\n";
+    saveOrderSummaryFile(head);
+    
+    cout << "\n[SUCCESS] Order ID " << newOrder->orderId
+         << " has been successfully added to the system!\n";
+    cout << "[SUCCESS] OrderSummary.txt have been updated.\n";
+    
+    delete selectedProduct;
 }
 
 void Customer::displayOrders(){
@@ -243,33 +412,18 @@ void Customer::generateReport(){
 	cout << "[SYSTEM] Sorting records by Quantity (Highest to Lowest)...\n";
     sortOrders(2);
 	
-	ofstream outFile("OrderSummary.txt");
+	saveOrderSummaryFile(head);
 	
-	if(!outFile){
-		cout<<"[ERROR] Unable to create report file!\n";
-		return;
-	}
-	
-	outFile << "=========================================\n";
-    outFile << "        Order SUMMARY REPORT           \n";
-    outFile << "=========================================\n";
-    
-    Order* current = head;
-    while (current!= nullptr){
-    	outFile << "Order ID: " << current->orderId
-                << " | Product ID: " << current->productId
-                << " | Category Id: " << current->categoryId << "\n"
-                << " | Quantity: " << current->dispatchQuantity
-                << " | Date: " << current->orderDate << "\n";
-                
-        current = current->next;
-	}
-	
-	outFile.close();
 	cout << "[SUCCESS] Report successfully saved to 'OrderSummary.txt'!\n";
 	cout << "\n[SYSTEM] Retrieving data from text file...\n\n";
     
-    ifstream inFile("OrderSummary.txt");
+    ifstream inFile("data\\OrderSummary.txt");
+    
+    if (!inFile){
+    	cout << "[ERROR] Unable to read OrderSummary.txt!\n";
+    	return;
+	}
+	
     string line;
     
     while(getline(inFile,line)){
@@ -314,6 +468,10 @@ void Customer::sortOrders(int criteria) {
                 int tempprodId = current->productId;
                 current->productId = current->next->productId;
                 current->next->productId = tempprodId;
+                
+                int tempCatId = current->categoryId;
+                current->categoryId = current->next->categoryId;
+                current->next->categoryId = tempCatId;
 
                 int tempQty = current->dispatchQuantity;
                 current->dispatchQuantity = current->next->dispatchQuantity;
@@ -322,6 +480,10 @@ void Customer::sortOrders(int criteria) {
                 string tempDate = current->orderDate;
                 current->orderDate = current->next->orderDate;
                 current->next->orderDate = tempDate;
+                
+                string tempOp = current->operatorName;
+                current->operatorName = current->next->operatorName;
+                current->next->operatorName = tempOp;
 
                 swapped = true;
             }
@@ -333,7 +495,54 @@ void Customer::sortOrders(int criteria) {
     cout << "\n[SUCCESS] Records sorted successfully!\n";
 }
 
+void forceReloadInventory() {
+    while (inventoryHead != nullptr) {
+        Product* temp = inventoryHead;
+        inventoryHead = inventoryHead->next;
+        delete temp;
+    }
 
+    ifstream inFile("Inventory.txt");
+    if (!inFile) return;
+
+    string line;
+    while (getline(inFile, line)) {
+        if (line.empty()) continue;
+
+        Product* newNode = new Product;
+        size_t pos = 0;
+        string token;
+        int field = 0;
+        
+        try {
+            while ((pos = line.find('|')) != string::npos) {
+                token = line.substr(0, pos);
+                if (field == 0) newNode->productId = stoi(token);
+                else if (field == 1) newNode->productName = token;
+                else if (field == 2) newNode->category = token;
+                else if (field == 3) newNode->stockQuantity = stoi(token);
+                else if (field == 4) newNode->zone = token;
+                else if (field == 5) newNode->supplier = token;
+                
+                line.erase(0, pos + 1);
+                field++;
+            }
+            newNode->productPrice = stod(line);
+            newNode->next = nullptr;
+            
+            if (inventoryHead == nullptr) {
+                inventoryHead = newNode;
+            } else {
+                Product* temp = inventoryHead;
+                while (temp->next != nullptr) temp = temp->next;
+                temp->next = newNode;
+            }
+        } catch (...) {
+            delete newNode;
+        }
+    }
+    inFile.close();
+}
 
 void Customer::displayMenu(){
 	int choice = 0;

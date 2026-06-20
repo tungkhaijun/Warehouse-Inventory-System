@@ -10,3 +10,5 @@ NG|666|Customer
 TEST1|abc123|Customer
 TEST_ADMIN|abc123|Admin
 NG|666|Customer
+CYC|abc1234|Customer
+CYYY|abc1234|Customer
