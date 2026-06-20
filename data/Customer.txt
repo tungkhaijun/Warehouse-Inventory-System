@@ -1,5 +1,5 @@
-admin|admin123|Admin
-superadmin|super123|SuperAdmin
+customer01|cus123|Customer
+customer02|123mamme|Customer
 CYY|123|Customer
 CINDY|456|Customer
 LEE|789|Customer
@@ -8,7 +8,10 @@ CHUA|555|Customer
 CHOI|987|Customer
 NG|666|Customer
 TEST1|abc123|Customer
-TEST_ADMIN|abc123|Admin
 NG|666|Customer
+<<<<<<< HEAD:Admin.txt
 CYC|abc1234|Customer
 CYYY|abc1234|Customer
+=======
+
+>>>>>>> 535164195ae2b686c6f27e1223ffdf1dcb35dd30:data/Customer.txt

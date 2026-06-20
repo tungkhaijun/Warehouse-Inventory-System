@@ -6,7 +6,7 @@
 #include "admin.h"
 #include "backend.h"
 #include "structures.h"
-//#include "Lead_backend.cpp"
+#include "Lead_backend.cpp"
 
 using namespace std;
 
@@ -23,7 +23,7 @@ void saveInventoryToFile(ProductLinkedList& inventory) {
     // This is CORRECT because we always write the full linked list back to disk.
     // Old data is preserved as long as loadInventoryFromFile() was called at startup
     // so the linked list already contains all existing products before we add new ones.
-    ofstream outFile("Inventory.txt", ios::out | ios::trunc);
+    ofstream outFile("data/Inventory.txt", ios::out | ios::trunc);
     if (!outFile) {
         cout << "[System Warning] Cannot write to Inventory.txt!" << endl;
         return;
@@ -43,24 +43,28 @@ void saveInventoryToFile(ProductLinkedList& inventory) {
 }
 
 void saveAdminsToFile() {
-    // Write using '|' delimiter to match Admin.txt format: username|password|role
-    ofstream outFile("Admin.txt", ios::out | ios::trunc);
+    // This function ONLY persists Admin & SuperAdmin accounts to data/Admin.txt.
+    // Customer accounts are handled separately by saveCustomersToFile() in customer.cpp.
+    // Format: username|password|role
+    ofstream outFile("data/Admin.txt", ios::out | ios::trunc);
     if (!outFile) {
         cout << "[System Warning] Cannot write to Admin.txt!" << endl;
         return;
     }
     User* temp = userHead;
     while (temp != NULL) {
-        outFile << temp->username << "|" 
-                << temp->password << "|" 
-                << temp->role << "\n";
+        if (temp->role == "Admin" || temp->role == "SuperAdmin") {
+            outFile << temp->username << "|"
+                    << temp->password << "|"
+                    << temp->role << "\n";
+        }
         temp = temp->next;
     }
     outFile.close();
 }
 
 void loadInventoryFromFile(ProductLinkedList& inventory) {
-    ifstream inFile("Inventory.txt");
+    ifstream inFile("data/Inventory.txt");
     if (!inFile) {
         cout << "[System Notice] Inventory.txt not found. Starting fresh." << endl;
         return; 
@@ -95,12 +99,20 @@ void loadInventoryFromFile(ProductLinkedList& inventory) {
 }
 
 void loadAdminsFromFile() {
-    ifstream inFile("Admin.txt");
-    if (!inFile) return; 
+    // This function ONLY loads Admin & SuperAdmin accounts from data/Admin.txt.
+    // Customer accounts are handled separately by loadCustomersFromFile() in customer.cpp.
+    ifstream inFile("data/Admin.txt");
+    if (!inFile) return;
 
     string line;
     // Admin.txt format uses '|' as delimiter: username|password|role
     while (getline(inFile, line)) {
+        if (line.empty()) continue;
+
+        // Defensive programming: strip trailing '\r' left by Windows line endings
+        if (!line.empty() && line[line.length() - 1] == '\r') {
+            line.erase(line.length() - 1);
+        }
         if (line.empty()) continue;
 
         stringstream ss(line);
@@ -112,7 +124,7 @@ void loadAdminsFromFile() {
         User* n = NULL;
         if (role == "SuperAdmin") n = new SuperAdmin(un, pw);
         else if (role == "Admin") n = new Admin(un, pw);
-        else continue; 
+        else continue; // Customer (or unknown) rows don't belong in Admin.txt — skip
 
         if (userHead == NULL) {
             userHead = n;
@@ -249,7 +261,7 @@ void SuperAdmin::displayMenu() {
     int choice;
     bool inMenu = true;
     while (inMenu) {
-        cout << "\n=== 👑 SuperAdmin Panel | User: " << username << " ===" << endl;
+        cout << "\n===SuperAdmin Panel | User: " << username << " ===" << endl;
         cout << "1. View Inventory\n2. Sort Inventory\n3. Search Product\n4. Add Product\n5. Update Stock\n";
         cout << "6. Delete Product [High Privilege]\n7. Add Admin [High Privilege]\n8. Logout\nChoice: ";
         cin >> choice;

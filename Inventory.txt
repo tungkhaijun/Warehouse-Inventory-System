@@ -1,1 +1,0 @@
-101 |nike_shoes_black|Footwear|50|Zone_A|Nike_HQ|399 102|adidas_white_running|Footwear|30|Zone_A|Adidas_Supplier|450 103 |vans_classic_oldskool|Footwear|100|Zone_A|Vans_Malacca|240 104|puma_runner_v2|Footwear|45|Zone_A|Puma_Distributor|180 105
