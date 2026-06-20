@@ -1,4 +1,12 @@
 =========================================
         ORDER SUMMARY REPORT             
 =========================================
-Order ID: 1001 | Product ID: 1001 | Product: Laptop | Category: Electronics | Quantity: 1 | Date: 2026-06-21_02:11:30
+
+Record #1
+Order ID   : 1001
+Product ID : 1004
+Product    : Monitor
+Category   : Electronics
+Quantity   : 4
+Order Date : 2026-06-21_04:54:36
+-----------------------------------------

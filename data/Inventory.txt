@@ -1,6 +1,6 @@
 1001|Laptop|Electronics|50|A01|Dell|3500
 1002|Mouse|Electronics|120|A02|Logitech|80
-1003|Keyboard|Electronics|80|A03|Logitech|120
+1003|Keyboard|Electronics|71|A03|Logitech|120
 1004|Monitor|Electronics|30|A04|Samsung|600
 1005|Headphones|Electronics|65|A05|Sony|250
 1006|Printer|Electronics|15|B01|HP|450
