@@ -2,8 +2,13 @@
 0|TUNG K||12|A12|Adidas|0
 1001|Laptop|Electronics|50|A01|Dell|3500
 1002|Mouse|Electronics|120|A02|Logitech|80
+<<<<<<< HEAD
 1003|Keyboard|Electronics|80|A03|Logitech|120
 1004|Monitor|Electronics|12|A130|Samsung|650
+=======
+1003|Keyboard|Electronics|71|A03|Logitech|120
+1004|Monitor|Electronics|30|A04|Samsung|600
+>>>>>>> 8966d4d5f24cd4a5e6c5add7cf5d6849bc3fd7e0
 1005|Headphones|Electronics|65|A05|Sony|250
 1006|Printer|Electronics|15|B01|HP|450
 1007|Scanner|Electronics|8|B02|Canon|300
@@ -25,7 +30,7 @@
 1025|HDMI Cable|Electronics|90|A10|UGreen|15
 1026|Backpack|Apparel|60|E01|Samsonite|110
 1027|T-Shirt|Apparel|150|E02|Uniqlo|20
-1028|Jacket|Apparel|45|E03|Adidas|85
+1028|Jacket|Apparel|40|E03|Adidas|85
 1029|Cap|Apparel|80|E04|Nike|25
 1030|Socks Pack|Apparel|300|E05|Puma|10
 1031|Router|Electronics|22|B04|TP-Link|60
@@ -57,6 +62,9 @@
 1057|Ink Cartridge|Office|0|D15|HP|120
 1058|Server Rack|Electronics|3|B10|Dell|5000
 1059|Paper Clip|Office|1000|D16|Deli|1
+<<<<<<< HEAD
 1069|Adidas|Nice|0|||7.41731e-317
 1087|Adidas|Nice|0|||7.41731e-317
 1234|tung|122|111|A12|Adidas|1232
+=======
+>>>>>>> 8966d4d5f24cd4a5e6c5add7cf5d6849bc3fd7e0

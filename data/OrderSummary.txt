@@ -1,0 +1,12 @@
+=========================================
+        ORDER SUMMARY REPORT             
+=========================================
+
+Record #1
+Order ID   : 1001
+Product ID : 1028
+Product    : Jacket
+Category   : Apparel
+Quantity   : 5
+Order Date : 2026-06-21_05:18:23
+-----------------------------------------
