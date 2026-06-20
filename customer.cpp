@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Customer::Customer(string username , string password){
+Customer::Customer(string username , string password) : User(username, password, "Customer"){
 	this->username = username;
 	this->password = password;
 	head = nullptr;
@@ -42,6 +42,7 @@ void Customer::addOrder(){
 	cout<<"Enter Order Date: ";
 	cin >> newOrder->orderDate;
 	
+	newOrder->operatorName = username;
 	newOrder->next = nullptr;
 	
 	if(head == nullptr){
@@ -130,7 +131,7 @@ void Customer::searchOrder() {
 			last = mid -1;
 		}
 		else{
-			first = mid + 1
+			first = mid + 1;
 		}
 	}
 	
@@ -149,7 +150,7 @@ void Customer::searchOrder() {
 		cout << "\n[ERROR] Order ID " << targetId << " not found in the system.\n";
 	}
 	
-	delete[] tempArray
+	delete[] tempArray;
 
 }
 

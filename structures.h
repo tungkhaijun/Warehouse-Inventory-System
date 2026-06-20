@@ -23,6 +23,7 @@ struct Product {
 struct Order {
     int orderId;
     int productId;
+    int categoryId;
     int dispatchQuantity;
     string operatorName;
     string orderDate;

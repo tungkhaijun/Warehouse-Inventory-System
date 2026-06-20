@@ -5,18 +5,19 @@
 #include "structures.h"
 #include "customer.h"
 #include "backend.h"
-//#include "admin.h"
+#include "admin.h"
 
 using namespace std;
 
 Product* inventoryHead = NULL;
 Order* orderHead = NULL;
 User* userHead = NULL;
+ProductLinkedList globalInventory;
 
 //1. Safe Input: Make sure user enters number for menu choice
 int getSafeInput(){
 	int input;
-	while (true){
+	
 		try{
 			cin >> input;
 			if(cin.fail()){
@@ -29,10 +30,12 @@ int getSafeInput(){
 		}
 		catch (const char* errorMessage){
 			cout << errorMessage << endl;
+			
 			cin.clear();
 			cin.ignore(1000, '\n');
-			cout << ">>";
-		}
+			
+			return -1;
+		
 	}
 } 
 
@@ -112,7 +115,7 @@ void loadOrdersFromFile(){
 }
 
 
-//4. Load Admin Data
+//4. Load User Data
 void loadUsersFromFile(){
 	ifstream inFile("Admin.txt");
 	
@@ -133,21 +136,36 @@ void loadUsersFromFile(){
             role.erase(role.length() - 1);
         }
 
-        User* newNode = new User;
-        newNode->username = user;
-        newNode->password = pass;
-        newNode->role = role;
-        newNode->next = NULL;
+        User* newNode = NULL;
 
-        if (userHead == NULL) {
-            userHead = newNode;
-        } else {
-            User* temp = userHead;
-            while (temp->next != NULL) {
-                temp = temp->next;
-            }
-            temp->next = newNode;
+        if (role == "Admin") {
+        newNode = new Admin(user, pass);
         }
+        else if (role == "SuperAdmin") {
+        newNode = new SuperAdmin(user, pass);
+        }
+        else if (role == "Customer") {
+        newNode = new Customer(user, pass);
+        }
+        else {
+        cout << "System Warning: Unknown role skipped for user " << user << endl;
+        continue;
+       }
+		
+		newNode->next = NULL;
+		
+        if(userHead == NULL){
+        	userHead = newNode;
+		}
+		else{
+			User* temp = userHead;
+			
+			while(temp->next != NULL){
+				temp = temp->next;
+			}
+			
+			temp->next = newNode;
+		}
      }
      inFile.close();
 	 cout <<"System: User credentials loaded succesfully." <<endl;	
@@ -239,28 +257,77 @@ bool isUsernameExist(string username){
 	return false;
 }
 
-//9. Add usernode to linked list
-void addUserToList(string username, string password, string role){
-	User* newNode = new User;
-	newNode->username= username;
-	newNode->password= password;
-	newNode->role = role;
-	newNode->next = NULL;
+//9. Register Validation
+bool isValidUsername(string username){
+	if (username.length() < 3 || username.length() > 20){
+		return false;
+	}
 	
-	if(userHead == NULL){
-		userHead = newNode;
-	}
-	else{
-		User* temp = userHead;
+	for (int i = 0; i < username.length(); i++){
+		char c = username[i];
 		
-		while (temp->next != NULL){
-			temp = temp->next;
-		}
-		temp->next = newNode;
+		bool isLetter = (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+		bool isDigit = (c >= '0' && c <= '9');
+		bool isUnderscore = (c == '_');
+		
+		if (!isLetter && !isDigit && !isUnderscore){
+		return false;
 	}
+   }
+  	
+  return true;
 }
 
-//10.Save user to Admin.txt
+bool isValidPassword(string password){
+	if (password.length() < 4 || password.length() > 20){
+		return false;
+	}
+	
+	for (int i = 0; i < password.length(); i++){
+		if (password[i] == '|'){
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+
+//10. Add usernode to linked list
+void addUserToList(string username, string password, string role){
+    User* newNode = NULL;
+
+    if (role == "Admin") {
+        newNode = new Admin(username, password);
+    }
+    else if (role == "SuperAdmin") {
+        newNode = new SuperAdmin(username, password);
+    }
+    else if (role == "Customer") {
+        newNode = new Customer(username, password);
+    }
+    else {
+        cout << "System Error: Invalid role. User not added." << endl;
+        return;
+    }
+
+    newNode->next = NULL;
+
+    if (userHead == NULL) {
+        userHead = newNode;
+    }
+    else {
+        User* temp = userHead;
+
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+
+        temp->next = newNode;
+    }
+}
+
+//11.Save user to Admin.txt
 void saveUsersToFile(){
 	ofstream outFile("Admin.txt", ios::trunc);
 	
@@ -283,52 +350,89 @@ void saveUsersToFile(){
 	cout <<"System: User data succesfully saved to file." << endl;
 }
 
-//11. Customer registration function
+//12. Customer registration function
 void registerCustomer(){
 	string username, password, confirmPassword;
+	bool validUsername = false;
+	bool validPassword = false;
 	
 	cout <<"\n~+~Customer Registration~+~" <<endl;
-	
-	cout <<"Enter username: ";
-	cin >> username;
-	
-	if (isUsernameExist(username)){
-		cout <<"System Error: Username already exists. Please try another username." << endl;
+	cout <<"Enter 0 anytime for cancel registration."<<endl;
+ //Username Validation looping
+	while (!validUsername){		
+       cout <<"Enter username: ";
+	   cin >> username;
+	   
+	if (username == "0"){
+		cout << "System: Customer registration cancelled." << endl;
 		return;
 	}
+		
+	if (!isValidUsername(username)){
+		cout <<"System Error: Username must be 3~20 characters and only contain letters, numbers or underscore." << endl;
+		cout <<"Please enter username again.\n" << endl;
+	}
 	
-	cout << "Enter password: ";
-	cin >> password;
+	else if (isUsernameExist(username)){
+		cout <<"System Error: Username already exists." << endl;
+		cout <<"Please try another username again.\n" << endl;
+	}
+	
+	else{
+      validUsername = true;
+	}
+ }
+
+	// Password validation looping
+	while (!validPassword){
+	 cout << "Enter password: ";
+	 cin >> password;
+	 
+	if (password == "0"){
+		cout << "System: Customer registration cancelled." << endl;
+		return;
+	}
+	 
+	 if (!isValidPassword(password)){
+		cout << "System Error: Password must be 4~20 characters and cannot contain | symbol." << endl;
+		cout << "Please enter password again.\n" << endl;
+		continue;
+	}
 	
 	cout << "Confirm password: ";
 	cin >> confirmPassword;
 	
 	if (password != confirmPassword){
 		cout << "System Error: Password confirmation does not match." <<endl;
-		return;
+		cout << "Please enter password again.\n" << endl;
 	}
-	
+	else{
+		validPassword = true;
+	}
+		
+  }
+  
 	addUserToList(username, password, "Customer");
 	saveUsersToFile();
 	
 	cout <<"System: Customer account registered successfully." << endl;
 }
-
-//12. Authentication for User
-bool authenticateUser(string inputUser, string inputPass, string expectedRole) {
+//13. Authentication for User
+User* authenticateUser(string inputUser, string inputPass, string expectedRole) {
     User* temp = userHead;
     
     while (temp != NULL) {
-        if (temp->username == inputUser && temp->password == inputPass && temp->role == expectedRole) {
-            return true;
+        if (temp->username == inputUser &&
+		    temp->password == inputPass &&
+			temp->role == expectedRole) {
+			return temp;
         }
         temp = temp->next; 
     }
-    return false; 
+    return NULL; 
 }
 
-
-//13. Clear Memory to prevent Memory Leak
+//14. Clear Memory to prevent Memory Leak
 void clearMemory(){
 	Product* productTemp;
 	
@@ -358,7 +462,7 @@ void clearMemory(){
 }
 
 
-//14. Main Menu
+//15. Main Menu
 int main() {
     cout <<"==========================================="<<endl;
     cout <<"        Warehouse Inventory System         "<<endl;
@@ -382,6 +486,10 @@ int main() {
         
         int choice = getSafeInput();
         
+        if(choice == -1){
+        	continue;
+		}
+        
         switch (choice) {
             case 1: {
                 cout << "\n--- Admin Login ---" << endl;
@@ -391,43 +499,39 @@ int main() {
                 cin >> inputPass;
 
                 // Verify credentials against the User linked list (Admin /SuperAdmin)
-                if (authenticateUser(inputUser, inputPass, "Admin")) {
+                User* currentUser = authenticateUser(inputUser, inputPass, "Admin");
+                
+                if (currentUser != NULL) {
                     cout << "\nAccess Granted. Welcome, Admin " << inputUser << "!" << endl;
-                
-					  
-	                User* currentUser = new Admin(inputUser, inputPass);
                     currentUser->displayMenu(); 
-                    delete currentUser;
                 }
-                
-                else if (authenticateUser(inputUser, inputPass, "SuperAdmin")) {
+                else{
+				  currentUser = authenticateUser(inputUser, inputPass, "SuperAdmin");
+				  
+				  if(currentUser != NULL) {
                     cout << "\nAccess Granted. Welcome, SuperAdmin " << inputUser << "!" << endl;  
-					
-					User* currentUser = new SuperAdmin(inputUser, inputPass);
                     currentUser->displayMenu(); 
-                    delete currentUser; // 退出菜单后释放内存
-                }  
-                    
-                    // TODO: Call Member 2's admin module here
-                    // Admin adminObj;
-                    // adminObj.displayMenu(); 
-                } else {
+                  }
+                  else {
                     cout << "\nAccess Denied. Incorrect username or password." << endl;
                 }
-                break;
             }
+            
+            break;
+        }
+        
             case 2: {
                 cout << "\n--- Customer Login ---" << endl;
                 cout << "Username: ";
                 cin >> inputUser;
                 cout << "Password: ";
                 cin >> inputPass;
-
-                if (authenticateUser(inputUser, inputPass, "Customer")) {
+                
+                User* currentUser = authenticateUser(inputUser, inputPass, "Customer");
+				
+				if(currentUser != NULL){
                     cout << "\nAccess Granted. Welcome, Customer " << inputUser << "!" << endl;
-                    
-                    Customer customerObj(inputUser, inputPass);
-                    customerObj.displayMenu();
+                    currentUser->displayMenu();
                 } else {
                     cout << "\nAccess Denied. Incorrect username or password." << endl;
                 }
