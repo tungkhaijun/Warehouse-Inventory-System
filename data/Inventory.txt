@@ -1,13 +1,13 @@
+0|TUNG KHAI JUN|room|0|||6.95314e-310
+0|TUNG K||12|A12|Adidas|0
 1001|Laptop|Electronics|50|A01|Dell|3500
 1002|Mouse|Electronics|120|A02|Logitech|80
 1003|Keyboard|Electronics|80|A03|Logitech|120
-1004|Monitor|Electronics|30|A04|Samsung|600
+1004|Monitor|Electronics|12|A130|Samsung|650
 1005|Headphones|Electronics|65|A05|Sony|250
 1006|Printer|Electronics|15|B01|HP|450
 1007|Scanner|Electronics|8|B02|Canon|300
 1008|Projector|Electronics|5|B03|Epson|1200
-1009|Tablet|Electronics|40|A06|Apple|800
-1010|Smartphone|Electronics|85|A07|Samsung|1000
 1011|Desk Chair|Furniture|25|C01|IKEA|150
 1012|Office Desk|Furniture|12|C02|IKEA|300
 1013|Filing Cabinet|Furniture|18|C03|Steelcase|200
@@ -57,3 +57,6 @@
 1057|Ink Cartridge|Office|0|D15|HP|120
 1058|Server Rack|Electronics|3|B10|Dell|5000
 1059|Paper Clip|Office|1000|D16|Deli|1
+1069|Adidas|Nice|0|||7.41731e-317
+1087|Adidas|Nice|0|||7.41731e-317
+1234|tung|122|111|A12|Adidas|1232

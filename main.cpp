@@ -8,22 +8,11 @@
 #include "admin.cpp"
 #include "admin.h"
 #include "backend.h"
-//#include "Lead_backend.cpp"
+
 
 using namespace std;
 
-// =========================================================
-// Global State
-// =========================================================
-// NOTE: Inventory and User data live ONLY here now.
-// All loading/saving goes through dedicated data/ functions:
-//   loadInventoryFromFile() / saveInventoryToFile()   (admin.cpp)    -> data/Inventory.txt
-//   loadAdminsFromFile()    / saveAdminsToFile()      (admin.cpp)    -> data/Admin.txt    (Admin/SuperAdmin only)
-//   loadCustomersFromFile() / saveCustomersToFile()   (customer.cpp) -> data/Customer.txt (Customer only)
-// All accounts end up on the same userHead linked list regardless of
-// which file they were loaded from — login logic doesn't care.
-// The old inventoryHead / Inventory.txt (root) / Admin.txt (root) system
-// has been removed to avoid two systems writing/reading different files.
+
 User* userHead = NULL;
 ProductLinkedList globalInventory;
 

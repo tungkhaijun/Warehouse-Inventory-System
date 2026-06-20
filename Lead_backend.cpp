@@ -1,9 +1,19 @@
 #include <iostream>
 #include <string>
+#include <iomanip> 
 #include "backend.h"
 #include "structures.h"
 
 using namespace std;
+
+// Helper: truncate a field to fit a fixed column width so a long string
+// (e.g. a long supplier name) cannot push the rest of the row out of
+// alignment when used together with setw().
+static string truncateField(const string& text, int width) {
+    if ((int)text.length() <= width) return text;
+    if (width <= 3) return text.substr(0, width); // too narrow to fit "..."
+    return text.substr(0, width - 3) + "...";
+}
 
 
 // ==========================================
@@ -177,52 +187,39 @@ using namespace std;
         return found;
     }
 
-    // Display the linked list (for testing purposes)
+    // Display the linked list as an aligned table using setw()
     void ProductLinkedList::display() {
+        if (head == NULL) {
+            cout << "[System] Inventory is empty.\n";
+            return;
+        }
+
+        // Header
+        cout <<"\n"<< left
+             << setw(6)  << "ID"
+             << setw(20) << "Name"
+             << setw(15) << "Category"
+             << setw(10) << "Zone"
+             << setw(15) << "Supplier"
+             << setw(8)  << "Qty"
+             << right << setw(12) << "Price (RM)"
+             << "\n";
+        cout << string(86, '-') << "\n";
+
+        // Rows
+        cout << fixed << setprecision(2);
         Product* temp = head;
         while (temp != NULL) {
-            cout << "[ID: " << temp->productId 
-                << " | Name: " << temp->productName 
-                << " | Category: " << temp->category
-                << " | Zone: " << temp->zone
-                << " | Supplier: " << temp->supplier
-                << " | Qty: " << temp->stockQuantity 
-                << " | Price: RM" << temp->productPrice << "]\n";
+            cout << left
+                 << setw(6)  << temp->productId
+                 << setw(20) << truncateField(temp->productName, 19)
+                 << setw(15) << truncateField(temp->category, 14)
+                 << setw(10) << truncateField(temp->zone, 9)
+                 << setw(15) << truncateField(temp->supplier, 14)
+                 << setw(8)  << temp->stockQuantity
+                 << right << setw(12) << temp->productPrice
+                 << "\n";
             temp = temp->next;
         }
-        cout << "-----------------------------------\n";
+        cout << string(86, '-') << "\n";
     }
-
-// ==========================================
-// main function for testing the ProductLinkedList class
-// ==========================================
-/*int main() {
-    ProductLinkedList inventory;
-
-    // 1. test inserting nodes
-    inventory.insertNode(105, "Mouse", "Electronics", 50, "Zone A", "Supplier X", 25.5);
-    inventory.insertNode(102, "Keyboard", "Electronics", 15, "Zone B", "Supplier Y", 120.0);
-    inventory.insertNode(108, "Monitor", "Electronics", 5, "Zone C", "Supplier Z", 450.0);
-    inventory.insertNode(101, "Cable", "Electronics", 200, "Zone A", "Supplier X", 15.0);
-
-    cout << "Original List:\n";
-    inventory.display();
-
-    // 2. test sorting by price (sortBy = 2)
-    cout << "Sorted by Price (Merge Sort):\n";
-    inventory.sortList(2);
-    inventory.display();
-
-    // 3. test sorting by quantity (sortBy = 1)
-    cout << "Sorted by Quantity (Merge Sort):\n";
-    inventory.sortList(1);
-    inventory.display();
-
-    // 4. test binary search by product ID (sortBy = 0)
-    cout << "Binary Search for ID 102:\n";
-    Product* target = inventory.binarySearch(102);
-    if (target) cout << "Found: " << target->productName << "\n";
-    else cout << "Not Found\n";
-
-    return 0;
-}*/

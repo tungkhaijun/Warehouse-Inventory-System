@@ -30,6 +30,7 @@ public:
     void updateStock(ProductLinkedList& inventory);
     void sortAndDisplay(ProductLinkedList& inventory);
     void searchProduct(ProductLinkedList& inventory);
+    void generateLowStockReport(ProductLinkedList& inventory);
 };
 
 // =========================================================
@@ -48,6 +49,7 @@ public:
     void sortAndDisplay(ProductLinkedList& inventory);
     void searchProduct(ProductLinkedList& inventory);
     void addAdmin();
+    void generateLowStockReport(ProductLinkedList& inventory);
 };
 
 #endif

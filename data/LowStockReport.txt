@@ -1,0 +1,24 @@
+===== LOW STOCK REPORT =====
+Low Stock Threshold: <= 10 units
+
+--- Overall Inventory Statistics ---
+Total Products: 62
+Total Stock Units: 6613
+Total Stock Value: RM 522157.00
+Average Product Price: RM 287.68
+Low Stock Items: 13
+
+--- Low Stock Product List ---
+0|TUNG KHAI JUN|room||0|0.00
+1056|Gaming Chair|Furniture|C10|0|800.00
+1057|Ink Cartridge|Office|D15|0|120.00
+1069|Adidas|Nice||0|0.00
+1087|Adidas|Nice||0|0.00
+1058|Server Rack|Electronics|B10|3|5000.00
+1048|Safe Box|Furniture|C08|4|500.00
+1008|Projector|Electronics|B03|5|1200.00
+1039|Water Dispenser|Electronics|B07|6|220.00
+1018|Paper Shredder|Office|D03|7|180.00
+1007|Scanner|Electronics|B02|8|300.00
+1055|Label Printer|Electronics|B09|9|160.00
+1014|Bookshelf|Furniture|C04|10|120.00
