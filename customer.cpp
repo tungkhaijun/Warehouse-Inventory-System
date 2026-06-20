@@ -24,7 +24,6 @@ string getCurrentDateTime() {
 
 int getNextOrderId(Order* head) {
     int maxId = 1000;
-
     Order* current = head;
 
     while (current != NULL) {
@@ -751,7 +750,7 @@ void Customer::displayMenu(){
 			}
 				
 			case 8:
-				cout<<"\n[SYSTEM] Generating Booking's Report...\n";
+				cout<<"\n[SYSTEM] Generating Order's Report...\n";
 				generateReport();
 				break;
 				
