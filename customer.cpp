@@ -715,16 +715,17 @@ void Customer::displayMenu(){
 		cout<<"6. Search Orders\n";
 		cout<<"7. Sort Orders\n";
 		cout<<"8. Generate Order Report\n";
-		cout<<"9. Logout\n";
+        cout <<"9. View My Profile\n";
+		cout<<"10. Logout\n";
 		cout<<"\n==============================\n";
-		cout<<"Enter your Choice (1-9): ";
+		cout<<"Enter your Choice (1-10): ";
 		
 		try{
 			cin>>choice;
 			if(cin.fail()){
 				throw string("Invalid input detected! Please enter the valid number!");
 			}
-		if (choice < 1 || choice>9){
+		if (choice < 1 || choice>10){
 			throw choice;
 		}
 		switch (choice){
@@ -777,6 +778,10 @@ void Customer::displayMenu(){
 				break;
 				
 			case 9:
+				cout << "\n[SYSTEM] Viewing My Profile...\n";
+				printUserProfile(*this);
+				break;
+			case 10:
 				cout << "\n[SYSTEM] Logging out...\n";
 				keepRunning = false;
 				break;

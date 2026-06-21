@@ -629,7 +629,9 @@ void SuperAdmin::displayMenu() {
         cout << "6. Delete Product \n";
         cout << "7. Add Admin \n";
         cout << "8. Generate Low Stock Report\n";
-        cout << "9. Logout\n";
+        cout << "9. View Stock Summary\n";
+        cout << "10. Customer View Mode\n";
+        cout << "11. Logout\n";
         cout << "\n==================================\n";
         cout << "Enter a function: ";
         cin >> choice;
@@ -644,7 +646,9 @@ void SuperAdmin::displayMenu() {
         else if (choice == 6) deleteProduct(globalInventory);
         else if (choice == 7) addAdmin();
         else if (choice == 8) generateLowStockReport(globalInventory);
-        else if (choice == 9) inMenu = false;
+        else if (choice == 9) generateStockSummary(globalInventory);
+        else if (choice == 10) displayInventoryForCustomer(globalInventory);
+        else if (choice == 11) inMenu = false;
         else cout << "[Error] Invalid option." << endl;
     }
 }
@@ -803,5 +807,77 @@ void SuperAdmin::addAdmin() {
         cout << "\n [Success] New Admin account generated and saved onto the linked structure.\n";
     } else {
         cout << "\n [Cancelled] Registration sequence stopped. No credentials saved.\n";
+    }
+}
+
+void displayInventoryForCustomer(const ProductLinkedList& inv) {
+    cout << "\n===== INVENTORY (Customer View) =====\n";
+    cout << left << setw(6) << "ID" << setw(22) << "Name"
+         << setw(15) << "Category" << right << setw(10) << "Price(RM)\n";
+    cout << string(53, '-') << "\n";
+    
+    Product* temp = inv.head;
+    if (temp == NULL) {
+        cout << " [Info] No products available.\n";
+        return;
+    }
+    while (temp != NULL) {
+        cout << left  << setw(6)  << temp->productId
+             << setw(22) << temp->productName
+             << setw(15) << temp->category
+             << right << setw(10) << fixed << setprecision(2) << temp->productPrice << "\n";
+        temp = temp->next;
+    }
+    cout << string(53, '-') << "\n";
+    cout << " Total Products: " << inv.count << "\n";
+}
+
+void generateStockSummary(const ProductLinkedList& inv) {
+    cout << "\n===== STOCK SUMMARY =====\n";
+    
+    if (inv.count == 0) {
+        cout << " [Info] Inventory is empty.\n";
+        return;
+    }
+    
+    int totalQty = 0;
+    double totalValue = 0.0;
+    int lowStockCount = 0;
+    
+    Product* temp = inv.head;
+    while (temp != NULL) {
+        totalQty    += temp->stockQuantity;
+        totalValue  += temp->stockQuantity * temp->productPrice;
+        if (temp->stockQuantity <= 10) lowStockCount++;
+        temp = temp->next;
+    }
+    
+    cout << " Total Products    : " << inv.count << "\n";
+    cout << " Total Units       : " << totalQty << "\n";
+    cout << " Total Value       : RM " << fixed << setprecision(2) << totalValue << "\n";
+    cout << " Low Stock Items   : " << lowStockCount << "\n";
+    cout << "=========================\n";
+}
+
+void adminViewCustomerOrders(const Customer& cust) {
+    cout << "\n===== ORDERS FOR: " << cust.username << " =====\n";
+    
+    Order* current = cust.head;
+    
+    if (current == NULL) {
+        cout << " [Info] This customer has no orders.\n";
+        return;
+    }
+    
+    int count = 1;
+    while (current != NULL) {
+        cout << " Order #" << count << "\n";
+        cout << "   Order ID  : " << current->orderId << "\n";
+        cout << "   Product ID: " << current->productId << "\n";
+        cout << "   Quantity  : " << current->dispatchQuantity << "\n";
+        cout << "   Date      : " << current->orderDate << "\n";
+        cout << " -----------------------\n";
+        current = current->next;
+        count++;
     }
 }

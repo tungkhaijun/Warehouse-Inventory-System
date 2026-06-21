@@ -36,6 +36,7 @@ class User {
 public:
     string username, password, role;
     User* next;
+    friend void printUserProfile(const User& u);
 
     User(string un, string pw, string r) : username(un), password(pw), role(r), next(NULL) {}
     virtual ~User() {}
