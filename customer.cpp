@@ -424,10 +424,21 @@ void Customer::displayOrders(){
 	int recordcount = 1;
 	
 	while(current != NULL){
-		cout<<"Record #"<< recordcount<<"\n";
-		cout << "  Order ID : " << current->orderId << "\n";
-        cout << "  Product ID : " << current->productId << "\n";
-        cout << "  Category ID: " << current->categoryId << "\n";
+		Product* product = findProductById(current->productId);
+		
+		cout << "Record #" << recordcount << "\n";
+        cout << "  Order ID     : " << current->orderId << "\n";
+        cout << "  Product ID   : " << current->productId << "\n";
+        
+        if(product != NULL){
+            cout << "  Product Name : " << product->productName << "\n";
+            cout << "  Category     : " << product->category << "\n";
+            delete product;
+        } else {
+            cout << "  Product Name : Unknown Product\n";
+            cout << "  Category     : Unknown Category\n";
+        }
+        
         cout << "  Quantity   : " << current->dispatchQuantity << "\n";
         cout << "  Order Date : " << current->orderDate << "\n";
         cout << "---------------------------------\n";
@@ -496,7 +507,18 @@ void Customer::searchOrder() {
         cout << "---------------------------------\n";
         cout << "Order ID    : " << found->orderId << "\n";
         cout << "Product ID  : " << found->productId << "\n";
-        cout << "Category ID : " << found->categoryId << "\n";
+        
+        Product* product = findProductById(found->productId);
+        
+		if (product != NULL) {
+		cout << "Product Name: " << product->productName << "\n";
+		cout << "Category    : " << product->category << "\n";
+		delete product;
+	} else {
+		cout << "Product Name: Unknown Product\n";
+		cout << "Category    : Unknown Category\n";
+	}
+	
         cout << "Quantity    : " << found->dispatchQuantity << "\n";
         cout << "Order Date  : " << found->orderDate << "\n";
         cout << "---------------------------------\n";
