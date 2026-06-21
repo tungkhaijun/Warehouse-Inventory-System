@@ -3,9 +3,7 @@
 #include <fstream>
 #include <string>
 #include "structures.h"
-#include "customer.cpp"
 #include "customer.h"
-#include "admin.cpp"
 #include "admin.h"
 #include "backend.h"
 
