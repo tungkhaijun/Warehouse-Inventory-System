@@ -12,14 +12,14 @@ using namespace std;
 
 const char* ORDER_SUMMARY_FILE = "data\\OrderSummary.txt";
 
-string getCurrentDateTime() {
-    time_t now = time(0);
-    tm* localTime = localtime(&now);
-
-    char buffer[30];
-    strftime(buffer, 30, "%Y-%m-%d_%H:%M:%S", localTime);
-
-    return string(buffer);
+string getCurrentDateTime(){
+	time_t now = time(0);
+	tm* localtime = localtime(&now);
+	
+	char buffer[30];
+	strftime(buffer, 30, "%Y-%m-%d_%H:%M:%S", localTtime);
+	
+	return string(buffer);
 }
 
 int getNextOrderId(Order* head) {
@@ -123,7 +123,7 @@ void displayAvailableInventory() {
              << priceStr << "\n";
     }
 
-    cout << "=====================================================\n";
+    cout << "===================================================\n";
 
     inFile.close();
 }
@@ -208,11 +208,11 @@ void saveOrderSummaryFile(Order* head) {
     outFile << "        ORDER SUMMARY REPORT             \n";
     outFile << "=========================================\n\n";
 
-    if (head == NULL) {
-        outFile << "No order records available.\n";
-        outFile.close();
-        return;
-    }
+    if (head == NULL){
+    	outFile << "No order record avaliable.\n";
+    	outFile.close();
+    	return;
+	}
 
     Order* current = head;
     int count = 1;
@@ -357,7 +357,7 @@ void Customer::addOrder(){
     cin >> newOrder->dispatchQuantity;
 
     if (newOrder->dispatchQuantity <= 0) {
-    cout << "[ERROR] Quantity must be more than 0. Order cancelled.\n";
+	cout << "[ERROR] Quantity must be more than 0. Order cancelled.\n";
     delete newOrder;
     delete selectedProduct;
     return;
@@ -380,10 +380,10 @@ void Customer::addOrder(){
     cin >> confirm;
 
     if (confirm != 'Y' && confirm != 'y') {
-        cout << "[SYSTEM] Order cancelled by customer.\n";
-        delete newOrder;
-        delete selectedProduct;
-        return;
+    cout << "[SYSTEM] Order cancelled by customer.\n";
+    delete newOrder;
+    delete selectedProduct;
+    return;
     }
     
     if (!reduceInventoryStock(newOrder->productId, newOrder->dispatchQuantity)) {
