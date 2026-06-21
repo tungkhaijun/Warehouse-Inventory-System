@@ -1,62 +1,59 @@
-1001|Laptop|Electronics|50|A01|Dell|3500
-1002|Mouse|Electronics|120|A02|Logitech|80
-<<<<<<< HEAD
-1003|Keyboard|Electronics|80|A03|Logitech|120
-1004|Monitor|Electronics|12|A130|Samsung|650
-1003|Keyboard|Electronics|71|A03|Logitech|120
-1004|Monitor|Electronics|30|A04|Samsung|600
-1005|Headphones|Electronics|65|A05|Sony|250
-1006|Printer|Electronics|15|B01|HP|450
-1007|Scanner|Electronics|8|B02|Canon|300
-1008|Projector|Electronics|5|B03|Epson|1200
-1011|Desk Chair|Furniture|25|C01|IKEA|150
-1012|Office Desk|Furniture|12|C02|IKEA|300
-1013|Filing Cabinet|Furniture|18|C03|Steelcase|200
-1014|Bookshelf|Furniture|10|C04|HomeDepot|120
-1015|Desk Lamp|Furniture|55|C05|Philips|45
-1016|Whiteboard|Office|14|D01|3M|90
-1017|Stapler|Office|200|D02|Deli|15
-1018|Paper Shredder|Office|7|D03|Aurora|180
-1019|Notebook|Office|500|D04|Moleskine|25
-1020|Gel Pens Pack|Office|350|D05|Pilot|12
-1021|A4 Paper Box|Office|100|D06|DoubleA|35
-1022|Calculator|Office|45|D07|Casio|50
-1023|USB Drive 64GB|Electronics|150|A08|Kingston|25
-1024|External HDD 1TB|Electronics|40|A09|WD|70
-1025|HDMI Cable|Electronics|90|A10|UGreen|15
-1026|Backpack|Apparel|60|E01|Samsonite|110
-1027|T-Shirt|Apparel|150|E02|Uniqlo|20
-1028|Jacket|Apparel|40|E03|Adidas|85
-1029|Cap|Apparel|80|E04|Nike|25
-1030|Socks Pack|Apparel|300|E05|Puma|10
-1031|Router|Electronics|22|B04|TP-Link|60
-1032|Network Switch|Electronics|11|B05|Cisco|250
-1033|Webcam|Electronics|35|A11|Logitech|95
-1034|Microphone|Electronics|28|A12|Razer|130
-1035|Power Bank|Electronics|75|A13|Anker|40
-1036|Bluetooth Speaker|Electronics|50|A14|JBL|120
-1037|Smart Watch|Electronics|30|A15|Garmin|400
-1038|Coffee Maker|Electronics|14|B06|Nescafe|180
-1039|Water Dispenser|Electronics|6|B07|Panasonic|220
-1040|Air Purifier|Electronics|12|B08|Xiaomi|150
-1041|Scissors|Office|120|D08|Deli|8
-1042|Sticky Notes|Office|400|D09|3M|5
-1043|Paper Clips Box|Office|600|D10|Deli|3
-1044|Highlighters Set|Office|180|D11|Stabilo|18
-1045|Folder File|Office|250|D12|FilesCo|6
-1046|Ergonomic Footrest|Furniture|20|C06|Kensington|40
-1047|Coat Rack|Furniture|15|C07|HomeDepot|35
-1048|Safe Box|Furniture|4|C08|Yale|500
-1049|Extension Cord|Electronics|110|A16|Bull|22
-1050|AA Batteries Pack|Electronics|400|A17|Energizer|12
-1051|AAA Batteries Pack|Electronics|350|A18|Energizer|12
-1052|Wireless Presenter|Office|25|D13|Logitech|30
-1053|Laptop Stand|Furniture|45|C09|Avantree|35
-1054|Keyboard Wrist Rest|Office|70|D14|HyperX|20
-1055|Label Printer|Electronics|9|B09|Brother|160
 1056|Gaming Chair|Furniture|0|C10|DXRacer|800
 1057|Ink Cartridge|Office|0|D15|HP|120
 1058|Server Rack|Electronics|3|B10|Dell|5000
+1048|Safe Box|Furniture|4|C08|Yale|500
+1008|Projector|Electronics|5|B03|Epson|1200
+1039|Water Dispenser|Electronics|6|B07|Panasonic|220
+1018|Paper Shredder|Office|7|D03|Aurora|180
+1007|Scanner|Electronics|8|B02|Canon|300
+1055|Label Printer|Electronics|9|B09|Brother|160
+1014|Bookshelf|Furniture|10|C04|HomeDepot|120
+1032|Network Switch|Electronics|11|B05|Cisco|250
+1004|Monitor|Electronics|12|A130|Samsung|650
+1012|Office Desk|Furniture|12|C02|IKEA|300
+1040|Air Purifier|Electronics|12|B08|Xiaomi|150
+1016|Whiteboard|Office|14|D01|3M|90
+1038|Coffee Maker|Electronics|14|B06|Nescafe|180
+1006|Printer|Electronics|15|B01|HP|450
+1047|Coat Rack|Furniture|15|C07|HomeDepot|35
+1013|Filing Cabinet|Furniture|18|C03|Steelcase|200
+1046|Ergonomic Footrest|Furniture|20|C06|Kensington|40
+1031|Router|Electronics|22|B04|TP-Link|60
+1011|Desk Chair|Furniture|25|C01|IKEA|150
+1052|Wireless Presenter|Office|25|D13|Logitech|30
+1034|Microphone|Electronics|28|A12|Razer|130
+1004|Monitor|Electronics|30|A04|Samsung|600
+1037|Smart Watch|Electronics|30|A15|Garmin|400
+1033|Webcam|Electronics|35|A11|Logitech|95
+1024|External HDD 1TB|Electronics|40|A09|WD|70
+1028|Jacket|Apparel|40|E03|Adidas|85
+1022|Calculator|Office|45|D07|Casio|50
+1053|Laptop Stand|Furniture|45|C09|Avantree|35
+1001|Laptop|Electronics|50|A01|Dell|3500
+1036|Bluetooth Speaker|Electronics|50|A14|JBL|120
+1015|Desk Lamp|Furniture|55|C05|Philips|45
+1026|Backpack|Apparel|60|E01|Samsonite|110
+1005|Headphones|Electronics|65|A05|Sony|250
+1054|Keyboard Wrist Rest|Office|70|D14|HyperX|20
+1003|Keyboard|Electronics|71|A03|Logitech|120
+1035|Power Bank|Electronics|75|A13|Anker|40
+1003|Keyboard|Electronics|80|A03|Logitech|120
+1029|Cap|Apparel|80|E04|Nike|25
+1025|HDMI Cable|Electronics|90|A10|UGreen|15
+1021|A4 Paper Box|Office|100|D06|DoubleA|35
+1049|Extension Cord|Electronics|110|A16|Bull|22
+1002|Mouse|Electronics|120|A02|Logitech|80
+1041|Scissors|Office|120|D08|Deli|8
+1023|USB Drive 64GB|Electronics|150|A08|Kingston|25
+1027|T-Shirt|Apparel|150|E02|Uniqlo|20
+1044|Highlighters Set|Office|180|D11|Stabilo|18
+1017|Stapler|Office|200|D02|Deli|15
+1045|Folder File|Office|250|D12|FilesCo|6
+1030|Socks Pack|Apparel|300|E05|Puma|10
+1020|Gel Pens Pack|Office|350|D05|Pilot|12
+1051|AAA Batteries Pack|Electronics|350|A18|Energizer|12
+1042|Sticky Notes|Office|400|D09|3M|5
+1050|AA Batteries Pack|Electronics|400|A17|Energizer|12
+1019|Notebook|Office|500|D04|Moleskine|25
+1043|Paper Clips Box|Office|600|D10|Deli|3
 1059|Paper Clip|Office|1000|D16|Deli|1
-=======
->>>>>>> 8966d4d5f24cd4a5e6c5add7cf5d6849bc3fd7e0
