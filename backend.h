@@ -11,6 +11,7 @@ using namespace std;
 class ProductLinkedList {
 private:
     Product* head;
+    int currentSort;
     int count;
 
     void Merge(Product** arr, int lpos, int rpos, int rend, int sortBy);

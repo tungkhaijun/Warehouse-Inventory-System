@@ -22,6 +22,7 @@ static string truncateField(const string& text, int width) {
     ProductLinkedList::ProductLinkedList() {
         head = NULL;
         count = 0;
+        currentSort = -1;
     }
 
     ProductLinkedList::~ProductLinkedList() {
@@ -98,6 +99,7 @@ static string truncateField(const string& text, int width) {
             curr->next = temp;
         }
         count++;
+        currentSort = -1;
     }
 
     // Deleting a node by product ID
@@ -114,6 +116,7 @@ static string truncateField(const string& text, int width) {
             head = head->next;
             delete temp;
             count--;
+            currentSort = -1;
         } else {
             while (temp != NULL && temp->productId != id) {
                 prev = temp;
@@ -123,6 +126,7 @@ static string truncateField(const string& text, int width) {
                 prev->next = temp->next;
                 delete temp;
                 count--;
+                currentSort = -1;
             }
         }
     }
@@ -148,6 +152,7 @@ static string truncateField(const string& text, int width) {
             curr = curr->next;
         }
         curr->next = NULL;
+        currentSort = sortBy;
 
         delete[] TmpArray;
     }
@@ -156,7 +161,9 @@ static string truncateField(const string& text, int width) {
     Product* ProductLinkedList::binarySearch(int targetId) {
         if (count == 0) return NULL;
 
+        if (currentSort != 0) {
         sortList(0); 
+        }
 
         Product** TmpArray = new Product*[count];
         Product* curr = head;
