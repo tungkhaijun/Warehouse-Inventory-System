@@ -2,10 +2,10 @@
 Low Stock Threshold: <= 10 units
 
 --- Overall Inventory Statistics ---
-Total Products: 59
-Total Stock Units: 6586
-Total Stock Value: RM 411500.00
-Average Product Price: RM 293.63
+Total Products: 57
+Total Stock Units: 6494
+Total Stock Value: RM 394100.00
+Average Product Price: RM 290.42
 Low Stock Items: 10
 
 --- Low Stock Product List ---

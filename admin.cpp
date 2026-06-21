@@ -717,7 +717,7 @@ void SuperAdmin::addAdmin() {
     cout << "=========================================\n";
     cout <<"Enter 0 anytime for cancel registration.\n"<<endl;
 
-    cin.clear();
+    clearInputBuffer();
 
     // 1. Prompt and rigorously validate Username input
     while (true) {
@@ -725,7 +725,7 @@ void SuperAdmin::addAdmin() {
         cin >> un;
         
         if (un == "0")	{
-        	cout << "[System] Admin registration cancelled." << endl;
+        	cout << "[System] Customer registration cancelled." << endl;
 			return;
 		}
 
@@ -764,7 +764,7 @@ void SuperAdmin::addAdmin() {
         cin >> pw;
         
         if (pw == "0")	{
-        	cout << "[System] Admin registration cancelled." << endl;
+        	cout << "[System] Customer registration cancelled." << endl;
 			return;
 		}
 

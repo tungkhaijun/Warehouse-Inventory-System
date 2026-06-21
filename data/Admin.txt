@@ -6,3 +6,5 @@ manager02|22222|Admin
 manager03|33333|Admin
 admin|admin123|Admin
 Tung0001|123mamme|Admin
+tung0002|12345|Admin
+tung00033|12333|Admin
