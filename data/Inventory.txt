@@ -1,5 +1,3 @@
-0|TUNG KHAI JUN|room|0|||6.95314e-310
-0|TUNG K||12|A12|Adidas|0
 1001|Laptop|Electronics|50|A01|Dell|3500
 1002|Mouse|Electronics|120|A02|Logitech|80
 <<<<<<< HEAD
@@ -62,9 +60,6 @@
 1057|Ink Cartridge|Office|0|D15|HP|120
 1058|Server Rack|Electronics|3|B10|Dell|5000
 1059|Paper Clip|Office|1000|D16|Deli|1
-<<<<<<< HEAD
-1069|Adidas|Nice|0|||7.41731e-317
-1087|Adidas|Nice|0|||7.41731e-317
-1234|tung|122|111|A12|Adidas|1232
+
 =======
 >>>>>>> 8966d4d5f24cd4a5e6c5add7cf5d6849bc3fd7e0

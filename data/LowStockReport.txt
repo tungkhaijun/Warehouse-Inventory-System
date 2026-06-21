@@ -9,7 +9,6 @@ Average Product Price: RM 287.68
 Low Stock Items: 13
 
 --- Low Stock Product List ---
-0|TUNG KHAI JUN|room||0|0.00
 1056|Gaming Chair|Furniture|C10|0|800.00
 1057|Ink Cartridge|Office|D15|0|120.00
 1069|Adidas|Nice||0|0.00
