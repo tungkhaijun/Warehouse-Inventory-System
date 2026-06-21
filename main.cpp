@@ -55,11 +55,6 @@ void checkSupportFile(const char* fileName){
 	  }
 	}
 	
-	void checkRequiredFiles(){
-		checkSupportFile("data/Suppliers.txt");
-		checkSupportFile("data/Logistics.txt");
-	}
-	
 //3.Check whether username exist
 bool isUsernameExist(string username){
 	User* temp = userHead;
@@ -250,8 +245,7 @@ int main() {
     loadInventoryFromFile(globalInventory);
     loadAdminsFromFile();
     loadCustomersFromFile();
-    checkRequiredFiles();
-    
+
     bool isRunning = true;
     string inputUser, inputPass;
     while (isRunning){
