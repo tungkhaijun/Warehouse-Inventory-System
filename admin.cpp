@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include "admin.h"
 #include "backend.h"
+#include "customer.h"
+#include "customer.cpp"
 #include "structures.h"
 #include "Lead_backend.cpp"
 
@@ -12,7 +14,6 @@ using namespace std;
 
 extern ProductLinkedList globalInventory; 
 extern User* userHead; 
-
 
 void saveInventoryToFile(ProductLinkedList& inventory) {
 
@@ -278,7 +279,8 @@ void Admin::displayMenu() {
         cout << "4. Add Product\n";
         cout << "5. Update Stock\n";
         cout << "6. Generate Low Stock Report\n";
-        cout << "7. Logout\n";
+        cout << "7. View Customer Orders\n";
+        cout << "8. Logout\n";
         cout << "\n================================== \n";
         cout << "Enter a function: ";
         cin >> choice;
@@ -295,7 +297,31 @@ void Admin::displayMenu() {
         else if (choice == 4) addProduct(globalInventory);
         else if (choice == 5) updateStock(globalInventory);
         else if (choice == 6) generateLowStockReport(globalInventory);
-        else if (choice == 7) inMenu = false;
+        else if (choice == 7) {
+            cout << "\nEnter Customer Username to view orders: ";
+            string targetUsername;
+            cin >> targetUsername;
+
+            User* temp = userHead;
+            bool found = false;
+
+            while (temp != NULL) {
+                if (temp->role == "Customer" && temp->username == targetUsername) {
+                    Customer* cust = dynamic_cast<Customer*>(temp);
+                    if (cust != NULL) {
+                        adminViewCustomerOrders(*cust);
+                        found = true;
+                    }
+                    break;
+                }
+                temp = temp->next;
+            }
+
+            if (!found) {
+                cout << "[Error] Customer '" << targetUsername << "' not found.\n";
+            }
+        }
+        else if (choice == 8) inMenu = false;
         else cout << "[Error] Invalid option." << endl;
     }
 }
@@ -631,7 +657,8 @@ void SuperAdmin::displayMenu() {
         cout << "8. Generate Low Stock Report\n";
         cout << "9. View Stock Summary\n";
         cout << "10. Customer View Mode\n";
-        cout << "11. Logout\n";
+        cout << "11. View Customer Orders\n";
+        cout << "12. Logout\n";
         cout << "\n==================================\n";
         cout << "Enter a function: ";
         cin >> choice;
@@ -648,7 +675,31 @@ void SuperAdmin::displayMenu() {
         else if (choice == 8) generateLowStockReport(globalInventory);
         else if (choice == 9) generateStockSummary(globalInventory);
         else if (choice == 10) displayInventoryForCustomer(globalInventory);
-        else if (choice == 11) inMenu = false;
+        else if (choice == 11) {
+            cout << "\nEnter Customer Username to view orders: ";
+            string targetUsername;
+            cin >> targetUsername;
+
+            User* temp = userHead;
+            bool found = false;
+
+            while (temp != NULL) {
+                if (temp->role == "Customer" && temp->username == targetUsername) {
+                    Customer* cust = dynamic_cast<Customer*>(temp);
+                    if (cust != NULL) {
+                        adminViewCustomerOrders(*cust);
+                        found = true;
+                    }
+                    break;
+                }
+                temp = temp->next;
+            }
+
+            if (!found) {
+                cout << "[Error] Customer '" << targetUsername << "' not found.\n";
+            }
+        }
+        else if (choice == 12) inMenu = false;
         else cout << "[Error] Invalid option." << endl;
     }
 }
@@ -880,4 +931,12 @@ void adminViewCustomerOrders(const Customer& cust) {
         current = current->next;
         count++;
     }
+}
+
+void printUserProfile(const User& u) {
+    cout << "=============================\n";
+    cout << " Username : " << u.username << "\n";
+    cout << " Role     : " << u.role     << "\n";
+    cout << " Password : " << string(u.password.length(), '*') << "\n";
+    cout << "=============================\n";
 }

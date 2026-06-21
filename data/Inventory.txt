@@ -1,3 +1,6 @@
+0|||0|||0
+0|||0|||0
+0|||0|||0
 1001|Laptop|Electronics|50|A01|Dell|3500
 1002|Mouse|Electronics|120|A02|Logitech|80
 1003|Keyboard|Electronics|71|A03|Logitech|120
@@ -17,7 +20,7 @@
 1019|Notebook|Office|500|D04|Moleskine|25
 1020|Gel Pens Pack|Office|350|D05|Pilot|12
 1021|A4 Paper Box|Office|100|D06|DoubleA|35
-1022|Calculator|Office|45|D07|Casio|50
+1022|Calculator|Office|40|D07|Casio|50
 1023|USB Drive 64GB|Electronics|150|A08|Kingston|25
 1024|External HDD 1TB|Electronics|40|A09|WD|70
 1025|HDMI Cable|Electronics|90|A10|UGreen|15
@@ -54,7 +57,4 @@
 1056|Gaming Chair|Furniture|0|C10|DXRacer|800
 1057|Ink Cartridge|Office|0|D15|HP|120
 1058|Server Rack|Electronics|3|B10|Dell|5000
-<<<<<<< HEAD
-1059|Paper Clip|Office|1000|D16|Deli|1
-=======
->>>>>>> 31474c920508ac6e1fd51bdcb0f504a6499c41e7
+1059|Paper Clip|Office|998|D16|Deli|1

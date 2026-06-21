@@ -2,15 +2,18 @@
 Low Stock Threshold: <= 10 units
 
 --- Overall Inventory Statistics ---
-Total Products: 57
+Total Products: 60
 Total Stock Units: 6494
 Total Stock Value: RM 394100.00
-Average Product Price: RM 290.42
-Low Stock Items: 10
+Average Product Price: RM 275.90
+Low Stock Items: 13
 
 --- Low Stock Product List ---
 1056|Gaming Chair|Furniture|C10|0|800.00
 1057|Ink Cartridge|Office|D15|0|120.00
+0||||0|0.00
+0||||0|0.00
+0||||0|0.00
 1058|Server Rack|Electronics|B10|3|5000.00
 1048|Safe Box|Furniture|C08|4|500.00
 1008|Projector|Electronics|B03|5|1200.00

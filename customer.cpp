@@ -7,6 +7,8 @@
 #include <ctime>
 #include "structures.h"
 #include "customer.h"
+#include "admin.h"
+
 
 using namespace std;
 

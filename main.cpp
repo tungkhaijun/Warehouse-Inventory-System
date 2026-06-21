@@ -3,12 +3,10 @@
 #include <fstream>
 #include <string>
 #include "structures.h"
-#include "customer.cpp"
 #include "customer.h"
-#include "admin.cpp"
 #include "admin.h"
 #include "backend.h"
-
+#include "admin.cpp"
 
 using namespace std;
 
@@ -16,7 +14,7 @@ using namespace std;
 User* userHead = NULL;
 ProductLinkedList globalInventory;
 
-//1. Safe Input: Make sure user enters number for menu choice
+//1. Safe Input to ensure user enter number only for menu choice
 int getSafeInput(){
 	int input;
 	
@@ -41,21 +39,8 @@ int getSafeInput(){
 	}
 } 
 
-//2. Check Required Support Files (Suppliers / Logistics), kept under data/
-void checkSupportFile(const char* fileName){
-	ifstream inFile(fileName);
 	
-	if (!inFile){
-		ofstream createFile(fileName);
-		createFile.close();
-		cout <<"System Warning: " << fileName << " not found. Empty file created. " << endl;
-	  }else{
-	  	inFile.close();
-	  	cout <<"System: " << fileName << " is ready."<< endl;
-	  }
-	}
-	
-//3.Check whether username exist
+//2.Check whether username exist in the file
 bool isUsernameExist(string username){
 	User* temp = userHead;
 	
@@ -68,7 +53,7 @@ bool isUsernameExist(string username){
 	return false;
 }
 
-//4. Register Validation
+//3. Register validation for username and password
 bool isValidUsername(string username){
 	if (username.length() < 3 || username.length() > 20){
 		return false;
@@ -104,7 +89,7 @@ bool isValidPassword(string password){
 }
 
 
-//5. Add usernode to linked list (in-memory only; caller decides when to persist)
+//4. Add usernode to linked list in-memory only; caller decides when to persist to file. Used for both Admin/SuperAdmin and Customer Registration.
 void addUserToList(string username, string password, string role){
     User* newNode = NULL;
 
@@ -138,7 +123,7 @@ void addUserToList(string username, string password, string role){
     }
 }
 
-//6. Customer registration function
+//5. Customer registration function
 void registerCustomer(){
 	string username, password, confirmPassword;
 	bool validUsername = false;
@@ -171,7 +156,7 @@ void registerCustomer(){
 	}
  }
 
-	// Password validation looping
+	// Password validation looping to ensure both validity and matches confirmation
 	while (!validPassword){
 	 cout << "Enter password: ";
 	 cin >> password;
@@ -206,7 +191,7 @@ void registerCustomer(){
 	cout <<"System: Customer account registered successfully." << endl;
 }
 
-//7. Authentication for User
+//6. Authentication for User
 User* authenticateUser(string inputUser, string inputPass, string expectedRole) {
     User* temp = userHead;
     
@@ -221,7 +206,7 @@ User* authenticateUser(string inputUser, string inputPass, string expectedRole) 
     return NULL; 
 }
 
-//8. Clear Memory to prevent Memory Leak
+//7. Clear Memory to prevent Memory Leak
 void clearMemory(){
 	User* userTemp;
 	
@@ -235,17 +220,20 @@ void clearMemory(){
 }
 
 
-//9. Main Menu
+//8. Main Menu
 int main() {
     cout <<"==========================================="<<endl;
     cout <<"        Warehouse Inventory System         "<<endl;
     cout <<"==========================================="<<endl;
     
-
+    // Load everything from data/ — single source of truth for both
+    // inventory (globalInventory) and accounts (userHead).
+    // Admin/SuperAdmin accounts and Customer accounts are loaded from
+    // separate files but end up on the same userHead linked list.
     loadInventoryFromFile(globalInventory);
     loadAdminsFromFile();
     loadCustomersFromFile();
-
+    
     bool isRunning = true;
     string inputUser, inputPass;
     while (isRunning){
