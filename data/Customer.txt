@@ -11,3 +11,7 @@ TEST1|abc123|Customer
 NG|666|Customer
 CYC|abc1234|Customer
 CYYY|abc1234|Customer
+<<<<<<< HEAD
+sss|ssss|Customer
+=======
+>>>>>>> bb04795b424af584c971c90fe327cf121c6c138f

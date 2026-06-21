@@ -57,4 +57,4 @@
 1056|Gaming Chair|Furniture|0|C10|DXRacer|800
 1057|Ink Cartridge|Office|0|D15|HP|120
 1058|Server Rack|Electronics|3|B10|Dell|5000
-1059|Paper Clip|Office|998|D16|Deli|1
+1059|Paper Clip|Office|1000|D16|Deli|1

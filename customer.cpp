@@ -13,6 +13,7 @@
 using namespace std;
 
 const char* ORDER_SUMMARY_FILE = "data\\OrderSummary.txt";
+const char* ORDERS_FILE = "data\\Orders.txt";
 
 string getCurrentDateTime(){
 	time_t now = time(0);
@@ -198,7 +199,7 @@ bool reduceInventoryStock(int productId, int orderQty) {
     return true;
 }
 
-void saveOrderSummaryFile(Order* head) {
+void saveOrderSummaryFile(Order* head, string customerName) {
     ofstream outFile("data\\OrderSummary.txt");
 
     if (!outFile) {
@@ -223,8 +224,9 @@ void saveOrderSummaryFile(Order* head) {
         Product* product = findProductById(current->productId);
 
         outFile << "Record #" << count << "\n";
-        outFile << "Order ID   : " << current->orderId << "\n";
-        outFile << "Product ID : " << current->productId << "\n";
+        outFile << "Customer Name : " << customerName << "\n";
+        outFile << "Order ID      : " << current->orderId << "\n";
+        outFile << "Product ID    : " << current->productId << "\n";
 
         if (product != NULL) {
             outFile << "Product    : " << product->productName << "\n";
@@ -244,6 +246,87 @@ void saveOrderSummaryFile(Order* head) {
     }
 
     outFile.close();
+}
+
+void appendOrderToFile(Order* order, string customerName) {
+    ofstream outFile(ORDERS_FILE, ios::app);
+
+    if (!outFile) {
+        cout << "[ERROR] Unable to write to data\\Orders.txt!\n";
+        return;
+    }
+
+    Product* product = findProductById(order->productId);
+
+    string productName = "Unknown Product";
+    string category = "Unknown Category";
+
+    if (product != NULL) {
+        productName = product->productName;
+        category = product->category;
+        delete product;
+    }
+
+    outFile << customerName << "|"
+            << order->orderId << "|"
+            << order->productId << "|"
+            << productName << "|"
+            << category << "|"
+            << order->dispatchQuantity << "|"
+            << order->orderDate << "\n";
+
+    outFile.close();
+}
+
+void loadOrdersFromFile(Order*& head, Order*& tail, string customerName) {
+    ifstream inFile(ORDERS_FILE);
+
+    if (!inFile) {
+        return;
+    }
+
+    string line;
+
+    while (getline(inFile, line)) {
+        if (line == "") {
+            continue;
+        }
+
+        stringstream ss(line);
+        string fileCustomer, orderIdStr, productIdStr;
+        string productName, category, qtyStr, dateStr;
+
+        getline(ss, fileCustomer, '|');
+        getline(ss, orderIdStr, '|');
+        getline(ss, productIdStr, '|');
+        getline(ss, productName, '|');
+        getline(ss, category, '|');
+        getline(ss, qtyStr, '|');
+        getline(ss, dateStr, '|');
+
+        if (fileCustomer != customerName) {
+            continue;
+        }
+
+        Order* newOrder = new Order;
+        newOrder->orderId = atoi(orderIdStr.c_str());
+        newOrder->productId = atoi(productIdStr.c_str());
+        newOrder->dispatchQuantity = atoi(qtyStr.c_str());
+        newOrder->orderDate = dateStr;
+        newOrder->categoryId = 0;
+        newOrder->operatorName = customerName;
+        newOrder->next = NULL;
+
+        if (head == NULL) {
+            head = newOrder;
+            tail = newOrder;
+        } else {
+            tail->next = newOrder;
+            tail = newOrder;
+        }
+    }
+
+    inFile.close();
 }
 // External global variable defined in main.cpp -- the single linked list
 // holding every logged-in-capable account (Admin, SuperAdmin, Customer).
@@ -312,6 +395,8 @@ void loadCustomersFromFile() {
 Customer::Customer(string username , string password) : User(username, password, "Customer"){
 	head = NULL;
 	tail = NULL;
+	
+	loadOrdersFromFile(head, tail, username);
 }
 
 Customer::~Customer(){
@@ -403,7 +488,8 @@ void Customer::addOrder(){
         tail = newOrder;
     }
     
-    saveOrderSummaryFile(head);
+    appendOrderToFile(newOrder, username);
+    saveOrderSummaryFile(head, username);
 
     cout << "\n[SUCCESS] Order ID " << newOrder->orderId
          << " has been successfully added to the system!\n";
@@ -428,7 +514,8 @@ void Customer::displayOrders(){
 	while(current != NULL){
 		Product* product = findProductById(current->productId);
 		
-		cout << "Record #" << recordcount << "\n";
+		cout << "  Record #" << recordcount << "\n";
+		cout << "  Customer Name: " << username << "\n";
         cout << "  Order ID     : " << current->orderId << "\n";
         cout << "  Product ID   : " << current->productId << "\n";
         
@@ -561,7 +648,7 @@ while(current != NULL){
 			cout<<"[ERROR] Quantity cannot be negative. Update aborted.\n";
 		} else{
 			current->dispatchQuantity = newQuantity;
-			saveOrderSummaryFile(head);
+			saveOrderSummaryFile(head, username);
 			cout<<"[SUCCESS] Order ID " << targetId << " has been updated successfully!\n";
 		}
 		found = true;
@@ -609,7 +696,7 @@ void Customer::deleteOrder(){
 	}
 	
 	delete current;
-	saveOrderSummaryFile(head);
+	saveOrderSummaryFile(head, username);
 	
 	cout<<"The Order deleted Successfully!\n";
 }
@@ -625,7 +712,7 @@ void Customer::generateReport() {
     cout << "[SYSTEM] Sorting records by Quantity (Highest to Lowest)...\n";
     sortOrders(2);
 
-    saveOrderSummaryFile(head);
+    saveOrderSummaryFile(head, username);
 
     cout << "[SUCCESS] Report successfully saved to 'data\\OrderSummary.txt'!\n";
     cout << "\n[SYSTEM] Retrieving data from text file...\n\n";
@@ -780,9 +867,13 @@ void Customer::displayMenu(){
 				break;
 				
 			case 9:
-				cout << "\n[SYSTEM] Viewing My Profile...\n";
-				printUserProfile(*this);
+			    cout << "\n[SYSTEM] Viewing My Profile...\n";
+				cout << "---------------------------------\n";
+				cout << "Username : " << username << "\n";
+				cout << "Role     : " << role << "\n";
+				cout << "---------------------------------\n";
 				break;
+				
 			case 10:
 				cout << "\n[SYSTEM] Logging out...\n";
 				keepRunning = false;
@@ -798,9 +889,9 @@ catch(string errorMsg){
 }
 
 catch(int invalidChoice){
-	cout<<"\n[ERROR]"<<invalidChoice<<"is OUT of Range! Please Enter 1-9...\n";
-}
-		}
+	cout<<"\n[ERROR]"<<invalidChoice<<"is OUT of Range! Please Enter 1-10...\n";
+}                                                                   
+		}                                                                 
 		
 
 	}

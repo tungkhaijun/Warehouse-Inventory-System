@@ -17,4 +17,3 @@ Product    : Calculator
 Category   : Office
 Quantity   : 5
 Order Date : 2026-06-22_03:23:30
------------------------------------------
