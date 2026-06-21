@@ -1,0 +1,2 @@
+CYYY|1001|1011|Desk Chair|Furniture|5|2026-06-22_02:24:25
+CYYY|1002|1023|USB Drive 64GB|Electronics|4|2026-06-22_02:25:40

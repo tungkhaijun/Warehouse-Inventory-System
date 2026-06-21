@@ -9,9 +9,6 @@ CHOI|987|Customer
 NG|666|Customer
 TEST1|abc123|Customer
 NG|666|Customer
-<<<<<<< HEAD:Admin.txt
 CYC|abc1234|Customer
 CYYY|abc1234|Customer
-=======
-
->>>>>>> 535164195ae2b686c6f27e1223ffdf1dcb35dd30:data/Customer.txt
+sss|ssss|Customer

@@ -3,10 +3,20 @@
 =========================================
 
 Record #1
+Customer Name : CYYY
 Order ID   : 1001
-Product ID : 1001
-Product    : Laptop
+Product ID : 1011
+Product    : Desk Chair
+Category   : Furniture
+Quantity   : 5
+Order Date : 2026-06-22_02:24:25
+-----------------------------------------
+Record #2
+Customer Name : CYYY
+Order ID   : 1002
+Product ID : 1023
+Product    : USB Drive 64GB
 Category   : Electronics
-Quantity   : 3
-Order Date : 2026-06-21_17:58:14
+Quantity   : 4
+Order Date : 2026-06-22_02:25:40
 -----------------------------------------
