@@ -14,10 +14,10 @@ const char* ORDER_SUMMARY_FILE = "data\\OrderSummary.txt";
 
 string getCurrentDateTime(){
 	time_t now = time(0);
-	tm* localtime = localtime(&now);
+	tm* localTime = localtime(&now);
 	
 	char buffer[30];
-	strftime(buffer, 30, "%Y-%m-%d_%H:%M:%S", localTtime);
+	strftime(buffer, 30, "%Y-%m-%d_%H:%M:%S", localTime);
 	
 	return string(buffer);
 }
