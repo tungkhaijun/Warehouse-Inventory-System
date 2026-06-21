@@ -3,10 +3,8 @@
 <<<<<<< HEAD
 1003|Keyboard|Electronics|80|A03|Logitech|120
 1004|Monitor|Electronics|12|A130|Samsung|650
-=======
 1003|Keyboard|Electronics|71|A03|Logitech|120
 1004|Monitor|Electronics|30|A04|Samsung|600
->>>>>>> 8966d4d5f24cd4a5e6c5add7cf5d6849bc3fd7e0
 1005|Headphones|Electronics|65|A05|Sony|250
 1006|Printer|Electronics|15|B01|HP|450
 1007|Scanner|Electronics|8|B02|Canon|300
@@ -60,6 +58,5 @@
 1057|Ink Cartridge|Office|0|D15|HP|120
 1058|Server Rack|Electronics|3|B10|Dell|5000
 1059|Paper Clip|Office|1000|D16|Deli|1
-
 =======
 >>>>>>> 8966d4d5f24cd4a5e6c5add7cf5d6849bc3fd7e0
