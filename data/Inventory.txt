@@ -1,13 +1,12 @@
-1001|Laptop|Electronics|45|A01|Dell|3500
-1002|Mouse|Electronics|117|A02|Logitech|80
-1003|Keyboard|Electronics|80|A03|Logitech|120
-1004|Monitor|Electronics|12|A130|Samsung|650
+1001|Laptop|Electronics|50|A01|Dell|3500
+1002|Mouse|Electronics|120|A02|Logitech|80
+1003|Keyboard|Electronics|71|A03|Logitech|120
 1004|Monitor|Electronics|30|A04|Samsung|600
 1005|Headphones|Electronics|65|A05|Sony|250
 1006|Printer|Electronics|15|B01|HP|450
 1007|Scanner|Electronics|8|B02|Canon|300
 1008|Projector|Electronics|5|B03|Epson|1200
-1011|Desk Chair|Furniture|20|C01|IKEA|150
+1011|Desk Chair|Furniture|25|C01|IKEA|150
 1012|Office Desk|Furniture|12|C02|IKEA|300
 1013|Filing Cabinet|Furniture|18|C03|Steelcase|200
 1014|Bookshelf|Furniture|10|C04|HomeDepot|120
@@ -19,7 +18,7 @@
 1020|Gel Pens Pack|Office|350|D05|Pilot|12
 1021|A4 Paper Box|Office|100|D06|DoubleA|35
 1022|Calculator|Office|45|D07|Casio|50
-1023|USB Drive 64GB|Electronics|146|A08|Kingston|25
+1023|USB Drive 64GB|Electronics|150|A08|Kingston|25
 1024|External HDD 1TB|Electronics|40|A09|WD|70
 1025|HDMI Cable|Electronics|90|A10|UGreen|15
 1026|Backpack|Apparel|60|E01|Samsonite|110
@@ -56,6 +55,3 @@
 1057|Ink Cartridge|Office|0|D15|HP|120
 1058|Server Rack|Electronics|3|B10|Dell|5000
 1059|Paper Clip|Office|1000|D16|Deli|1
-1069|Adidas|Nice|0|||7.41731e-317
-1087|Adidas|Nice|0|||7.41731e-317
-1234|tung|122|111|A12|Adidas|1232

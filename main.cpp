@@ -55,11 +55,6 @@ void checkSupportFile(const char* fileName){
 	  }
 	}
 	
-	void checkRequiredFiles(){
-		checkSupportFile("data/Suppliers.txt");
-		checkSupportFile("data/Logistics.txt");
-	}
-	
 //3.Check whether username exist
 bool isUsernameExist(string username){
 	User* temp = userHead;
@@ -246,15 +241,11 @@ int main() {
     cout <<"        Warehouse Inventory System         "<<endl;
     cout <<"==========================================="<<endl;
     
-    // Load everything from data/ — single source of truth for both
-    // inventory (globalInventory) and accounts (userHead).
-    // Admin/SuperAdmin accounts and Customer accounts are loaded from
-    // separate files but end up on the same userHead linked list.
+
     loadInventoryFromFile(globalInventory);
     loadAdminsFromFile();
     loadCustomersFromFile();
-    checkRequiredFiles();
-    
+
     bool isRunning = true;
     string inputUser, inputPass;
     while (isRunning){

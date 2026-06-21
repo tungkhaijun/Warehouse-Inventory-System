@@ -26,8 +26,6 @@ class Customer : public User{
 		Customer(string username = "", string password =""); 
 		~Customer();
 		
-		
-
 void addOrder();
 void displayOrders();
 void searchOrder();
@@ -36,6 +34,8 @@ void deleteOrder();
 void generateReport();
 void sortOrders(int criteria);
 void displayMenu();
+
+friend void adminViewCustomerOrders(const Customer& cust);
 };
 
 #endif

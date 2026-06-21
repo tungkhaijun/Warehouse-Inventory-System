@@ -26,9 +26,11 @@ public:
     void sortList(int sortBy);
     Product* binarySearch(int targetId);
     void display();
+    friend void displayInventoryForCustomer(const ProductLinkedList& inv);
     
     Product* getHead() const { return head; } 
     int getCount() const { return count; }    
+    friend void generateStockSummary(const ProductLinkedList& inv);
 };
 
 #endif 
