@@ -755,7 +755,7 @@ void SuperAdmin::addAdmin() {
         cin >> un;
         
         if (un == "0")	{
-        	cout << "[System] Customer registration cancelled." << endl;
+        	cout << "[System] Admin registration cancelled." << endl;
 			return;
 		}
 
@@ -794,7 +794,7 @@ void SuperAdmin::addAdmin() {
         cin >> pw;
         
         if (pw == "0")	{
-        	cout << "[System] Customer registration cancelled." << endl;
+        	cout << "[System] Admin registration cancelled." << endl;
 			return;
 		}
 
