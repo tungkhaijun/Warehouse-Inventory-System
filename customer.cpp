@@ -12,14 +12,14 @@ using namespace std;
 
 const char* ORDER_SUMMARY_FILE = "data\\OrderSummary.txt";
 
-string getCurrentDateTime() {
-    time_t now = time(0);
-    tm* localTime = localtime(&now);
-
-    char buffer[30];
-    strftime(buffer, 30, "%Y-%m-%d_%H:%M:%S", localTime);
-
-    return string(buffer);
+string getCurrentDateTime(){
+	time_t now = time(0);
+	tm* localTime = localtime(&now);
+	
+	char buffer[30];
+	strftime(buffer, 30, "%Y-%m-%d_%H:%M:%S", localTime);
+	
+	return string(buffer);
 }
 
 int getNextOrderId(Order* head) {
@@ -41,7 +41,7 @@ Product* findProductById(int productId) {
     ifstream inFile("data\\Inventory.txt");
 
     if (!inFile) {
-        cout << "[ERROR] Cannot open data\\Inventory.txt.\n";
+        cout << "[ERROR] Cannot open Inventory.txt.\n";
         return NULL;
     }
 
@@ -90,7 +90,7 @@ void displayAvailableInventory() {
     ifstream inFile("data\\Inventory.txt");
 
     if (!inFile) {
-        cout << "[ERROR] Cannot open data\\Inventory.txt.\n";
+        cout << "[ERROR] Cannot open Inventory.txt.\n";
         return;
     }
 
@@ -123,7 +123,7 @@ void displayAvailableInventory() {
              << priceStr << "\n";
     }
 
-    cout << "=====================================================\n";
+    cout << "===================================================\n";
 
     inFile.close();
 }
@@ -133,7 +133,7 @@ bool reduceInventoryStock(int productId, int orderQty) {
     ofstream tempFile("data\\Inventory_temp.txt");
 
     if (!inFile || !tempFile) {
-        cout << "[ERROR] Unable to open data\\Inventory.txt for stock update.\n";
+        cout << "[ERROR] Unable to open Inventory.txt for stock update.\n";
         return false;
     }
 
@@ -164,9 +164,9 @@ bool reduceInventoryStock(int productId, int orderQty) {
             productFound = true;
 
             if (currentStock >= orderQty) {
-                cout << "[SYSTEM] Stock before order: " << currentStock << "\n";
+                cout << "[SYSTEM] Stock before you order: " << currentStock << "\n";
                 currentStock = currentStock - orderQty;
-                cout << "[SYSTEM] Stock after order : " << currentStock << "\n";
+                cout << "[SYSTEM] Stock after you order : " << currentStock << "\n";
                 stockEnough = true;
             } else {
                 cout << "[ERROR] Not enough stock in Inventory.txt.\n";
@@ -208,11 +208,11 @@ void saveOrderSummaryFile(Order* head) {
     outFile << "        ORDER SUMMARY REPORT             \n";
     outFile << "=========================================\n\n";
 
-    if (head == NULL) {
-        outFile << "No order records available.\n";
-        outFile.close();
-        return;
-    }
+    if (head == NULL){
+    	outFile << "No order record avaliable.\n";
+    	outFile.close();
+    	return;
+	}
 
     Order* current = head;
     int count = 1;
@@ -357,7 +357,7 @@ void Customer::addOrder(){
     cin >> newOrder->dispatchQuantity;
 
     if (newOrder->dispatchQuantity <= 0) {
-    cout << "[ERROR] Quantity must be more than 0. Order cancelled.\n";
+	cout << "[ERROR] Quantity must be more than 0. Order cancelled.\n";
     delete newOrder;
     delete selectedProduct;
     return;
@@ -380,10 +380,10 @@ void Customer::addOrder(){
     cin >> confirm;
 
     if (confirm != 'Y' && confirm != 'y') {
-        cout << "[SYSTEM] Order cancelled by customer.\n";
-        delete newOrder;
-        delete selectedProduct;
-        return;
+    cout << "[SYSTEM] Order cancelled by customer.\n";
+    delete newOrder;
+    delete selectedProduct;
+    return;
     }
     
     if (!reduceInventoryStock(newOrder->productId, newOrder->dispatchQuantity)) {
@@ -424,10 +424,21 @@ void Customer::displayOrders(){
 	int recordcount = 1;
 	
 	while(current != NULL){
-		cout<<"Record #"<< recordcount<<"\n";
-		cout << "  Order ID : " << current->orderId << "\n";
-        cout << "  Product ID : " << current->productId << "\n";
-        cout << "  Category ID: " << current->categoryId << "\n";
+		Product* product = findProductById(current->productId);
+		
+		cout << "Record #" << recordcount << "\n";
+        cout << "  Order ID     : " << current->orderId << "\n";
+        cout << "  Product ID   : " << current->productId << "\n";
+        
+        if(product != NULL){
+            cout << "  Product Name : " << product->productName << "\n";
+            cout << "  Category     : " << product->category << "\n";
+            delete product;
+        } else {
+            cout << "  Product Name : Unknown Product\n";
+            cout << "  Category     : Unknown Category\n";
+        }
+        
         cout << "  Quantity   : " << current->dispatchQuantity << "\n";
         cout << "  Order Date : " << current->orderDate << "\n";
         cout << "---------------------------------\n";
@@ -496,7 +507,18 @@ void Customer::searchOrder() {
         cout << "---------------------------------\n";
         cout << "Order ID    : " << found->orderId << "\n";
         cout << "Product ID  : " << found->productId << "\n";
-        cout << "Category ID : " << found->categoryId << "\n";
+        
+        Product* product = findProductById(found->productId);
+        
+		if (product != NULL) {
+		cout << "Product Name: " << product->productName << "\n";
+		cout << "Category    : " << product->category << "\n";
+		delete product;
+	} else {
+		cout << "Product Name: Unknown Product\n";
+		cout << "Category    : Unknown Category\n";
+	}
+	
         cout << "Quantity    : " << found->dispatchQuantity << "\n";
         cout << "Order Date  : " << found->orderDate << "\n";
         cout << "---------------------------------\n";
