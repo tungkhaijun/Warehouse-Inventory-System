@@ -1,9 +1,8 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <sstream>  // Required for string splitting
+#include <sstream>  
 #include <cstdlib>
-#include <stdexcept> // Required for runtime_error / exception (try-catch error handling)
 #include "admin.h"
 #include "backend.h"
 #include "structures.h"
@@ -11,19 +10,12 @@
 
 using namespace std;
 
-// External global variables defined in main.cpp
 extern ProductLinkedList globalInventory; 
 extern User* userHead; 
 
-// =========================================================
-// File I/O Engine
-// =========================================================
 
 void saveInventoryToFile(ProductLinkedList& inventory) {
-    // ios::out | ios::trunc = overwrite entire file with ALL nodes in the linked list.
-    // This is CORRECT because we always write the full linked list back to disk.
-    // Old data is preserved as long as loadInventoryFromFile() was called at startup
-    // so the linked list already contains all existing products before we add new ones.
+
     ofstream outFile("data/Inventory.txt", ios::out | ios::trunc);
     if (!outFile) {
         cout << "[System Warning] Cannot write to Inventory.txt!" << endl;
@@ -44,9 +36,7 @@ void saveInventoryToFile(ProductLinkedList& inventory) {
 }
 
 void saveAdminsToFile() {
-    // This function ONLY persists Admin & SuperAdmin accounts to data/Admin.txt.
-    // Customer accounts are handled separately by saveCustomersToFile() in customer.cpp.
-    // Format: username|password|role
+
     ofstream outFile("data/Admin.txt", ios::out | ios::trunc);
     if (!outFile) {
         cout << "[System Warning] Cannot write to Admin.txt!" << endl;
@@ -101,7 +91,6 @@ void loadInventoryFromFile(ProductLinkedList& inventory) {
 
 void loadAdminsFromFile() {
     // This function ONLY loads Admin & SuperAdmin accounts from data/Admin.txt.
-    // Customer accounts are handled separately by loadCustomersFromFile() in customer.cpp.
     ifstream inFile("data/Admin.txt");
     if (!inFile) return;
 
@@ -110,7 +99,6 @@ void loadAdminsFromFile() {
     while (getline(inFile, line)) {
         if (line.empty()) continue;
 
-        // Defensive programming: strip trailing '\r' left by Windows line endings
         if (!line.empty() && line[line.length() - 1] == '\r') {
             line.erase(line.length() - 1);
         }
@@ -125,7 +113,7 @@ void loadAdminsFromFile() {
         User* n = NULL;
         if (role == "SuperAdmin") n = new SuperAdmin(un, pw);
         else if (role == "Admin") n = new Admin(un, pw);
-        else continue; // Customer (or unknown) rows don't belong in Admin.txt — skip
+        else continue; 
 
         if (userHead == NULL) {
             userHead = n;
@@ -248,7 +236,7 @@ int getValidIntData(string prompt) {
     while (true) {
         cout << prompt;
         if (cin >> value && value > 0) {
-            clearInputBuffer(); // Clear newline immediately to prepare for subsequent getline
+            clearInputBuffer(); 
             return value;
         }
         cout << " [Error] Please enter a valid positive integer (> 0)!\n";
@@ -270,9 +258,8 @@ double getValidDoubleData(string prompt) {
     }
 }
 
-// =========================================================
+
 // Admin Implementation
-// =========================================================
 Admin::Admin(string un, string pw) : User(un, pw, "Admin") { 
     next = NULL; 
 }
@@ -316,7 +303,7 @@ void Admin::displayMenu() {
 
 
 
-// --- 3. Add New Record 
+//  Add New Record 
 void Admin::addProduct(ProductLinkedList& inventory) {
     cout << "\n=========================================\n";
     cout << "        --- Add New Product ---          \n";
@@ -499,22 +486,11 @@ void Admin::searchProduct(ProductLinkedList& inventory) {
     }
 }
 
-// =========================================================
-// Inventory Summary Report: Low Stock Report
-// =========================================================
-// [Rubric Note] This satisfies the "Summary Report" requirement:
-//   - Accurate, dynamically computed statistics (not hardcoded)
-//   - Displayed on screen AND saved into a .txt file (data/LowStockReport.txt)
-//
-// [Algorithm Note] Sorting reuses ProductLinkedList::sortList(), which
-// is the manually implemented Merge Sort algorithm from Lead_backend.cpp.
-// No STL sorting/searching function is used anywhere in this feature.
 
-const int LOW_STOCK_THRESHOLD = 10; // Products at or below this qty are flagged
+// low stock report
+const int LOW_STOCK_THRESHOLD = 10; 
 
-// Generates the Low Stock Report: counts low-stock items, computes
-// dynamic inventory statistics, displays the report, and writes it
-// to data/LowStockReport.txt so it can be retrieved later.
+
 void Admin::generateLowStockReport(ProductLinkedList& inventory) {
     cout << "\n=========================================\n";
     cout << "        --- Low Stock Report ---          \n";
@@ -525,13 +501,9 @@ void Admin::generateLowStockReport(ProductLinkedList& inventory) {
         return;
     }
 
-    // Reuse the manually implemented Merge Sort from Lead_backend.cpp
-    // (ProductLinkedList::sortList) to order products by quantity ascending.
-    // This places the most critical (lowest stock) items at the top of the report.
-    inventory.sortList(1); // sortBy = 1 -> Quantity (Merge Sort, see Lead_backend.cpp)
 
-    // ---- Pass 1: Walk the linked list manually to gather statistics ----
-    // (No STL containers/algorithms are used; this is a plain pointer traversal.)
+    inventory.sortList(1); 
+
     int totalProducts      = 0;
     int totalStockUnits    = 0;
     double totalStockValue = 0.0;
@@ -560,7 +532,7 @@ void Admin::generateLowStockReport(ProductLinkedList& inventory) {
     cout << " " << left << setw(22) << "Average Product Price" << ": RM " << averagePrice << "\n";
     cout << " " << left << setw(22) << "Low Stock Items"       << ": " << lowStockCount << " (threshold <= " << LOW_STOCK_THRESHOLD << ")\n";
 
-    // ---- Display: Low Stock Table (already sorted ascending by quantity) ----
+    // Low Stock Table ( sorted ascending by quantity)
     cout << "\n--- Products At or Below Threshold (" << LOW_STOCK_THRESHOLD << " units) ---\n";
 
     if (lowStockCount == 0) {
@@ -576,7 +548,7 @@ void Admin::generateLowStockReport(ProductLinkedList& inventory) {
              << "\n";
         cout << string(71, '-') << "\n";
 
-        temp = inventory.getHead(); // List is already sorted ascending by quantity
+        temp = inventory.getHead();
         while (temp != NULL) {
             if (temp->stockQuantity <= LOW_STOCK_THRESHOLD) {
                 cout << left
@@ -593,50 +565,45 @@ void Admin::generateLowStockReport(ProductLinkedList& inventory) {
         cout << string(71, '-') << "\n";
     }
 
-    // ---- Save the report to a .txt file (try/catch for error handling) ----
-    try {
-        ofstream outFile("data/LowStockReport.txt", ios::out | ios::trunc);
-        if (!outFile) {
-            throw runtime_error("Cannot open data/LowStockReport.txt for writing.");
-        }
-
-        outFile << "===== LOW STOCK REPORT =====\n";
-        outFile << "Low Stock Threshold: <= " << LOW_STOCK_THRESHOLD << " units\n\n";
-
-        outFile << "--- Overall Inventory Statistics ---\n";
-        outFile << fixed << setprecision(2);
-        outFile << "Total Products: " << totalProducts << "\n";
-        outFile << "Total Stock Units: " << totalStockUnits << "\n";
-        outFile << "Total Stock Value: RM " << totalStockValue << "\n";
-        outFile << "Average Product Price: RM " << averagePrice << "\n";
-        outFile << "Low Stock Items: " << lowStockCount << "\n\n";
-
-        outFile << "--- Low Stock Product List ---\n";
-        if (lowStockCount == 0) {
-            outFile << "No products are currently low on stock.\n";
-        } else {
-            temp = inventory.getHead();
-            while (temp != NULL) {
-                if (temp->stockQuantity <= LOW_STOCK_THRESHOLD) {
-                    // Pipe-delimited so the same row can be re-parsed later
-                    // by retrieveLowStockReport() using getline(ss, field, '|').
-                    outFile << temp->productId   << "|"
-                            << temp->productName  << "|"
-                            << temp->category     << "|"
-                            << temp->zone          << "|"
-                            << temp->stockQuantity << "|"
-                            << temp->productPrice  << "\n";
-                }
-                temp = temp->next;
-            }
-        }
-
-        outFile.close();
-        cout << "\n [System] Report successfully saved to data/LowStockReport.txt\n";
-
-    } catch (const exception& e) {
-        cout << "\n [Error] Failed to save report: " << e.what() << "\n";
+    
+    ofstream outFile("data/LowStockReport.txt", ios::out | ios::trunc);
+    if (!outFile) {
+       cout << "Cannot open data/LowStockReport.txt for writing.\n";
+       return ;
     }
+
+    outFile << "===== LOW STOCK REPORT =====\n";
+    outFile << "Low Stock Threshold: <= " << LOW_STOCK_THRESHOLD << " units\n\n";
+
+    outFile << "--- Overall Inventory Statistics ---\n";
+    outFile << fixed << setprecision(2);
+    outFile << "Total Products: " << totalProducts << "\n";
+    outFile << "Total Stock Units: " << totalStockUnits << "\n";
+    outFile << "Total Stock Value: RM " << totalStockValue << "\n";
+    outFile << "Average Product Price: RM " << averagePrice << "\n";
+    outFile << "Low Stock Items: " << lowStockCount << "\n\n";
+
+    outFile << "--- Low Stock Product List ---\n";
+    if (lowStockCount == 0) {
+        outFile << "No products are currently low on stock.\n";
+    } else {
+        temp = inventory.getHead();
+        while (temp != NULL) {
+            if (temp->stockQuantity <= LOW_STOCK_THRESHOLD) {
+
+                outFile << temp->productId   << "|"
+                        << temp->productName  << "|"
+                        << temp->category     << "|"
+                        << temp->zone          << "|"
+                        << temp->stockQuantity << "|"
+                        << temp->productPrice  << "\n";
+            }
+            temp = temp->next;
+        }
+    }
+
+    outFile.close();
+    cout << "\n [System] Report successfully saved to data/LowStockReport.txt\n";
 }
 
 // =========================================================
@@ -694,7 +661,7 @@ void SuperAdmin::deleteProduct(ProductLinkedList& inventory) {
     cout << "          --- Delete Product ---           \n";
     cout << "=========================================\n";
     
-    // Refresh input stream states
+
     cin.clear();
     int id = getValidIntData("Enter Product ID to Delete: ");
 
@@ -716,26 +683,25 @@ void SuperAdmin::deleteProduct(ProductLinkedList& inventory) {
         cout << "=========================================\n";
         cout << " WARNING: This operation is irreversible!\n";
         
-        // High Score Requirement: Interactive Dual-Confirmation Guard
+
         cout << " Are you absolutely sure you want to purge this record? (Y/N): ";
         char confirm;
         cin >> confirm;
-        clearInputBuffer(); // Purge trailing newline characters from cache
+        clearInputBuffer(); 
 
         if (confirm == 'Y' || confirm == 'y') {
-            // Unlink and deallocate memory space for the node within the custom structure
+
             inventory.deleteNode(id);
             cout << "\n [Success] Product record safely and permanently removed from memory.\n";
-            
-            // File I/O Synchronization: Write updated linked list states back to the data ledger
+
             saveInventoryToFile(inventory);
             cout << " [System] Local flat-file database successfully updated.\n";
         } else {
-            // Safety exit condition if user hesitates or cancels
+
             cout << "\n [Cancelled] Deletion process aborted. Data remains intact.\n";
         }
     } else {
-        // Graceful failure handler when non-existent keys are requested
+
         cout << "\n [Error] Target Product ID " << id << " was not found in the inventory system.\n";
     }
 }
@@ -766,7 +732,7 @@ void SuperAdmin::addAdmin() {
             continue;
         }
 
-        // Constraint B: Data uniqueness check (Duplicate Detection Rule)
+
         User* temp = userHead;
         bool isDuplicate = false;
         while (temp != NULL) {
@@ -783,7 +749,7 @@ void SuperAdmin::addAdmin() {
             continue;
         }
 
-        // Passed all validation metrics
+
         clearInputBuffer();
         break;
     }
@@ -823,7 +789,7 @@ void SuperAdmin::addAdmin() {
     clearInputBuffer();
 
     if (confirm == 'Y' || confirm == 'y') {
-        // 4. Instantiate object node and dynamically bind it into the user storage chain
+
         User* n = new Admin(un, pw);
         if (userHead == NULL) {
             userHead = n;
