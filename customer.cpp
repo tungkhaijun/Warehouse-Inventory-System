@@ -41,7 +41,7 @@ Product* findProductById(int productId) {
     ifstream inFile("data\\Inventory.txt");
 
     if (!inFile) {
-        cout << "[ERROR] Cannot open data\\Inventory.txt.\n";
+        cout << "[ERROR] Cannot open Inventory.txt.\n";
         return NULL;
     }
 
@@ -90,7 +90,7 @@ void displayAvailableInventory() {
     ifstream inFile("data\\Inventory.txt");
 
     if (!inFile) {
-        cout << "[ERROR] Cannot open data\\Inventory.txt.\n";
+        cout << "[ERROR] Cannot open Inventory.txt.\n";
         return;
     }
 
@@ -133,7 +133,7 @@ bool reduceInventoryStock(int productId, int orderQty) {
     ofstream tempFile("data\\Inventory_temp.txt");
 
     if (!inFile || !tempFile) {
-        cout << "[ERROR] Unable to open data\\Inventory.txt for stock update.\n";
+        cout << "[ERROR] Unable to open Inventory.txt for stock update.\n";
         return false;
     }
 
@@ -164,9 +164,9 @@ bool reduceInventoryStock(int productId, int orderQty) {
             productFound = true;
 
             if (currentStock >= orderQty) {
-                cout << "[SYSTEM] Stock before order: " << currentStock << "\n";
+                cout << "[SYSTEM] Stock before you order: " << currentStock << "\n";
                 currentStock = currentStock - orderQty;
-                cout << "[SYSTEM] Stock after order : " << currentStock << "\n";
+                cout << "[SYSTEM] Stock after you order : " << currentStock << "\n";
                 stockEnough = true;
             } else {
                 cout << "[ERROR] Not enough stock in Inventory.txt.\n";
